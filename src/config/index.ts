@@ -2,6 +2,7 @@ import Environment from './environment_interface';
 //Environment variables not using now.
 
 export default {
+    servicename: 'GranfondoPhotoSearch',
     paths: {
         tmp: '/tmp',
         asset: '/asset',
