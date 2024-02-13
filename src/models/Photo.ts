@@ -11,6 +11,21 @@ const PhotoSchema = new Schema({
         required: true,
         unique: true,
     },
+    competition: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    author: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    photographedTime: {
+        type: Date,
+        required: true,
+        unique: true,
+    },
     md5: {
         type: String,
         required: true,
