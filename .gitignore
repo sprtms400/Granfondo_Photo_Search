@@ -1,2 +1,4 @@
 # Modules
 /node_modules
+# Sensitive informations
+/keys

@@ -3,6 +3,8 @@ import config from '../config';
 
 // Create logger stream.
 /**
+ * Purpose : logging system for the service.
+ * 
  * Bunyan supports multiple logging styles.
  * 1. streams
  * 2. path logging
