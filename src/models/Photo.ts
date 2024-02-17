@@ -72,4 +72,4 @@ PhotoSchema.pre('save', function (next) {
     next();
 })
 
-module.exports = Mongoose.model('photos', PhotoSchema);
+export default Mongoose.model('photos', PhotoSchema);

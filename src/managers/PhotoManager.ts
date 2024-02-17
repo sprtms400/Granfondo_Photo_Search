@@ -1,1 +1,1 @@
-const {Storage} = require('@google-cloud/storage');
+import storage from '@google-cloud/storage';

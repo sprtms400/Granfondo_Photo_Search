@@ -36,4 +36,4 @@ CompetitionSchema.pre('save', function (next) {
     next();
 })
 
-module.exports = Mongoose.model('competitions', CompetitionSchema);
+export default Mongoose.model('competitions', CompetitionSchema);

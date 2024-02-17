@@ -1,5 +1,5 @@
 // third party components
-import * as express from 'express';
+import * as e from 'express';
 import * as oFs from 'fs';
 import logger from './logger';
 const oPieces = require('./pieces');
@@ -9,78 +9,89 @@ const oPieces = require('./pieces');
  * It aims to simplify client-server communication by ensuring consistency in response formats and HTTP status codes.
  */
 
-module.exports = {
-    sendSuccess: function (res: express.Response, data: Object, iHttpCode?: number) {
-        if (!res) {
-            return;
-        }
+/**
+ * 
+ * @param res       express response
+ * @param data      data object
+ * @param httpCode  http status code
+ * @returns 
+ */
+export const sendSuccess = function (res: e.Response, data: Object, httpCode?: number) {
+    if (!res) {
+        return;
+    }
 
-        const httpStatus = iHttpCode ? iHttpCode : 200;
-        let out = null;
+    const httpStatus = httpCode ? httpCode : 200;
+    let out = null;
 
-        if (data) {
-            out = data;
-        }
+    if (data) {
+        out = data;
+    }
 
-        res.status(httpStatus);
-        res.contentType('json');
+    res.status(httpStatus);
+    res.contentType('json');
 
-        return res.json(out);
-    },
-    sendError: function (res: express.Response, code: number, message: String, httpCode: number, description: String, errors: Error) {
-        if (!res) {
-            return;
-        }
+    return res.json(out);
+}
 
-        const out: any = {};
-        out.code = code;
-        out.message = message ? message.toString() : 'none';
+/**
+ * 
+ * @param res           express response
+ * @param code          error code
+ * @param message       error message
+ * @param httpCode      http status code
+ * @param description   error description
+ * @param errors        error object but you can send in optional
+ * @returns 
+ */
+export const sendError = function (res: e.Response, code: number, message: String, httpCode: number, description: String, errors?: Error) {
+    if (!res) {
+        return;
+    }
 
-        // if (process.env.NODE_ENV !== 'production') {
-            if (description) {
-                out.desc = description.toString();
-            } else if (errors) {
-                out.errors = errors;
-            }
-        // }
+    const out: any = {};
+    out.code = code;
+    out.message = message ? message.toString() : 'none';
+    out.desc = description.toString();
 
-        logger.info(out);
+    if (errors) {
+        out.errors = errors;
+    }
 
-        const status = httpCode ? httpCode : 500;
+    logger.info(out);
 
-        res.status(status);
-        res.contentType('json');
-        return res.json(out);
-    },
+    const status = httpCode ? httpCode : 500;
 
-    /*
-    sendSuccessToken: function (res: express.Response, token: String, user: any) {
-        if (!res) {
-            return;
-        }
+    res.status(status);
+    res.contentType('json');
+    return res.json(out);
+}
 
-        const out: any = {};
-        out.token = token;
-        const defaultTotalDevice = oPieces.totalAddDevice(user.payLevel);
-        if (user) {
-            out.id = user._id;
-            out.username = user.username;
-            out.displayName = user.displayName;
-            out.email = user.email;
-            out.userRight = user.userRight;
-            out.avatarUrl = user.avatarUrl;
-            out.defLanguage = user.defLanguage;
-            out.payLevel = user.payLevel;
-            out.payPeriod = user.payPeriod;
-            out.expiredDate = user.expiredDate;
-            out.lastAccessDate = user.lastAccessDate;
-            out.updatedDate = user.updatedDate;
-            out.totalStorage = user.totalStorage;
-            out.totalDevice = user.totalDevice && user.totalDevice > defaultTotalDevice ? user.totalDevice : defaultTotalDevice;
-        }
-        res.status(200);
-        res.contentType('json');
-        return res.json(out);
-    },
-    */
-};
+// export const sendSuccessToken = function (res: e.Response, token: String, user: any) {
+//     if (!res) {
+//         return;
+//     }
+
+//     const out: any = {};
+//     out.token = token;
+//     const defaultTotalDevice = oPieces.totalAddDevice(user.payLevel);
+//     if (user) {
+//         out.id = user._id;
+//         out.username = user.username;
+//         out.displayName = user.displayName;
+//         out.email = user.email;
+//         out.userRight = user.userRight;
+//         out.avatarUrl = user.avatarUrl;
+//         out.defLanguage = user.defLanguage;
+//         out.payLevel = user.payLevel;
+//         out.payPeriod = user.payPeriod;
+//         out.expiredDate = user.expiredDate;
+//         out.lastAccessDate = user.lastAccessDate;
+//         out.updatedDate = user.updatedDate;
+//         out.totalStorage = user.totalStorage;
+//         out.totalDevice = user.totalDevice && user.totalDevice > defaultTotalDevice ? user.totalDevice : defaultTotalDevice;
+//     }
+//     res.status(200);
+//     res.contentType('json');
+//     return res.json(out);
+// }
