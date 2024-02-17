@@ -1,6 +1,27 @@
 import * as Mongoose from 'mongoose';
-const Schema = Mongoose.Schema;
+import reservedKeywords from '../utils/reservedKeywords';
 
+/**
+ * Define interface for user model
+ */
+interface IPhoto extends Mongoose.Document {
+    srcLink: string;
+    competition: string;
+    author: string;
+    photographedTime: Date;
+    md5: string;
+    width: number;
+    height: number;
+    size: number;
+    hasThumbnail: boolean;
+    createdDate: Date;
+    updatedDate: Date;
+}
+
+/**
+ * Define user schema and set middleware function.
+ */
+const Schema = Mongoose.Schema;
 
 const PhotoSchema = new Schema({
     /**
@@ -72,4 +93,5 @@ PhotoSchema.pre('save', function (next) {
     next();
 })
 
-export default Mongoose.model('photos', PhotoSchema);
+const Photo = Mongoose.model<IPhoto>('photos', PhotoSchema);
+export { Photo, IPhoto };

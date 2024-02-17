@@ -1,5 +1,5 @@
 /**
- * @module
+ * @module User
  * @file UserCtrl.ts is a controller file which contains the methods to handle the user related operations
  * 
  * @description Validates user input against a predefined schema.
