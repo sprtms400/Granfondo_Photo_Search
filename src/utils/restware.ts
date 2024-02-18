@@ -44,7 +44,7 @@ export const sendSuccess = function (res: e.Response, data: Object, httpCode?: n
  * @param errors        error object but you can send in optional
  * @returns 
  */
-export const sendError = function (res: e.Response, code: number, message: String, httpCode: number, description: String, errors?: Error) {
+export const sendError = function (res: e.Response, code: number, message: string, httpCode: number, description: string, errors?: Error) {
     if (!res) {
         return;
     }
@@ -67,7 +67,7 @@ export const sendError = function (res: e.Response, code: number, message: Strin
     return res.json(out);
 }
 
-// export const sendSuccessToken = function (res: e.Response, token: String, user: any) {
+// export const sendSuccessToken = function (res: e.Response, token: string, user: any) {
 //     if (!res) {
 //         return;
 //     }

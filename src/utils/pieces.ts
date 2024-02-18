@@ -42,6 +42,7 @@ export const genRandomStringOfNumber = (length: number): string => {
 };
 
 /**
+ * Parse a stringified JSON in safely.
  * 
  * @param json  Stringified JSON
  * @returns     Parsed JSON or the original string if parsing fails

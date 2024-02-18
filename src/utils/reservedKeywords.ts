@@ -15,7 +15,7 @@
  * obj.a = 2 // invalid
  */
 const reservedKeywords = Object.freeze({
-    userStatusEnum: ['active', 'inactive', 'deleted'],
+    userStatusEnum: ['inactive', 'active', 'deleted'],
 });
 
 // ES6 modeule export
