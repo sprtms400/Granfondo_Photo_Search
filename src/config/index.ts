@@ -5,6 +5,7 @@ export default {
     servicename: 'GranfondoPhotoSearch',                // Service name.
     port: 3000,                                         // Port for the service.                             
     jwtAuthKey: 'goodlucktogetjob',                     // jwtAuthKey is required for jwt token generation it can be random.
+    emailVerificationExpiryDay: 3,                      // Email verification expiry day. after that temporary user will be deleted automatically.
     paths: {
         tmp: '/tmp',
         asset: '/asset',
@@ -35,6 +36,16 @@ export default {
             keyFilename: '../../../keys/granfondophotosearch-babc61c67a03.json',
             bucketName: 'granfondo-photos',
             projectId: 'granfondophotosearch',
+        }
+    },
+    mailer: {
+        service: 'gmail',
+        auth: {
+            user: 'your-email@gmail.com',
+            pass: 'your-email-password',
+        },
+        options: {
+            from: 'your-email@gmail.com',
         }
     }
 }

@@ -2,6 +2,7 @@ import oBcrypt from 'bcryptjs';
 import { IUser, User as oUser } from '../models/User';
 import reservedKeywords from '../utils/reservedKeywords';
 import config from '../config';
+import * as oService from '../services';
 
 export const create = function (userData: IUser, callback: (errorCode: number, errorMessage: string, httpCode: number, error: any, user: IUser|null) => void) {
     try {
@@ -14,6 +15,10 @@ export const create = function (userData: IUser, callback: (errorCode: number, e
             }
         );
         user.save().then((user: IUser) => {
+            /**
+             * Send mail to user for account verification
+             * oService.mailer(user.email, user._id); ...
+             */
             return callback(0, 'create_user_success', 200, null, user);
         })
         .catch((error: any) => {

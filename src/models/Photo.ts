@@ -16,6 +16,7 @@ interface IPhoto extends Mongoose.Document {
     hasThumbnail: boolean;
     createdDate: Date;
     updatedDate: Date;
+    uploader: Mongoose.Schema.Types.ObjectId;
 }
 
 /**
@@ -77,7 +78,12 @@ const PhotoSchema = new Schema({
         type: Date,
         default: Date.now,
         required: true,
-    }
+    },
+    uploader: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'users',
+        required: true,
+    },
 });
 
 /**

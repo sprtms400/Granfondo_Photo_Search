@@ -10,6 +10,7 @@
  */
 import * as e from 'express';
 import * as oRest from '../utils/restware';
+import * as oPieces from '../utils/pieces';
 import * as oUserManager from '../managers/UserManager';
 import { IUser } from '../models/User';
 
@@ -18,7 +19,7 @@ import { IUser } from '../models/User';
  * @params req express request object which continas new user information 
  * @params res express response object
  * 
- * @description Handles user registration. The expected contents of req.body are as follows:
+ * @description Handles user registration api will send verification mail to user. The expected contents of req.body are as follows:
  * @example
  * {
  *   "email": "user@example.com" // A string representing the user's email address.
@@ -30,16 +31,16 @@ export const create = function (req: e.Request, res: e.Response) {
     const oUserData = req.body || '';
 
     if(!oUserData) {
-        return oRest.sendError(res, 400, 'Invalid data', 400, 'Invalid data');
+        return oRest.sendError(res, 24, 'Invalid data', 400, 'Data is not provided');
     }
-    if(!oUserData.username) {
-        return oRest.sendError(res, 400, 'Invalid username', 400, 'Invalid username');
+    if(!oUserData.username || oUserData.username.length < 4 || oUserData.username.length > 64) {
+        return oRest.sendError(res, 24, 'Invalid username', 400, 'Given username is not provided or does not meet the format');
     }
-    if(!oUserData.password) {
-        return oRest.sendError(res, 400, 'Invalid password', 400, 'Invalid password');
+    if(!oUserData.password || oUserData.password.length < 4 || oUserData.password.length > 128) {
+        return oRest.sendError(res, 24, 'Invalid password', 400, 'Given password is not provided or does not meet the format');
     }
-    if(!oUserData.email) {
-        return oRest.sendError(res, 400, 'Invalid email', 400, 'Invalid email');
+    if(!oUserData.email || oUserData.email.length < 4 || oUserData.email.length > 128 || oPieces.isValidEmail(oUserData.email) === false){
+        return oRest.sendError(res, 24, 'Invalid email', 400, 'Given email is not provided or does not meet the format');
     }
 
     oUserManager.create( oUserData, function (errorCode: number, errorMessage: string, httpCode: number, errorDescription: any, user: IUser|null) {
@@ -56,7 +57,28 @@ export const create = function (req: e.Request, res: e.Response) {
     });
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
+export const emailAuthentcationCallback = function (req: e.Request, res: e.Response) {
+
+}
+
+/**
+ * @method POST
+ * @params req express request object which continas new user information 
+ * @params res express response object
+ * 
+ * @description Request to reset user password. The expected contents of req.body are as follows:
+ * @example
+ * {
+ *   "email": "user@example.com" // A string representing the user's email address.
+ * }
+ */
 export const requestPasswordReset = function (req: e.Request, res: e.Response) {
+    const oUserData = req.body || '';
 
 }
 
@@ -68,7 +90,7 @@ export const requestPasswordReset = function (req: e.Request, res: e.Response) {
  * 
  * @description Handles user password reset. The expected contents of req.body are as follows:
  * body : {
- *   "email": "user@example.com" // A string representing the user's email address.
+ *   "email": "user@example1.com" // A string representing the user's email address.
  *   "password": "password", // A string representing the user's password.
  * }
  */

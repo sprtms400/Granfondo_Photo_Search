@@ -62,3 +62,16 @@ export const safelyParseJSON = function (json: string) {
     }
     return parsed;
 };
+
+/**
+ * Validate an email address.
+ * @param email email address to validate
+ * @returns     true if the email is valid, false otherwise
+ * 
+ * @example isValidEmail('@example1.com') => false
+ * @example isValidEmail('test@example1.com') => true
+ */
+export const isValidEmail = function (email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
