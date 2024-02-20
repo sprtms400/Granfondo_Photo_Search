@@ -1,5 +1,8 @@
+import fs from 'fs';
 import Environment from './environment_interface';
 //Environment variables not using now.
+
+const oAuthSetting = JSON.parse(fs.readFileSync('keys/oAuthGmail.json', 'utf8'));
 
 export default {
     servicename: 'GranfondoPhotoSearch',                // Service name.
@@ -40,12 +43,18 @@ export default {
     },
     mailer: {
         service: 'gmail',
-        auth: {
-            user: 'your-email@gmail.com',
-            pass: 'your-email-password',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: true,
+        oauth: {
+            type: oAuthSetting.oauth.type,
+            user: oAuthSetting.oauth.user,
+            clientId: oAuthSetting.oauth.clientId,
+            clientSecret: oAuthSetting.oauth.clientSecret,
+            refreshToken: oAuthSetting.oauth.refreshToken,
         },
         options: {
-            from: 'your-email@gmail.com',
+            from: 'sprtms400@gmail.com',
         }
     }
 }

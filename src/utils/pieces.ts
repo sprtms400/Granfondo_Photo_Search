@@ -65,6 +65,7 @@ export const safelyParseJSON = function (json: string) {
 
 /**
  * Validate an email address.
+ * 
  * @param email email address to validate
  * @returns     true if the email is valid, false otherwise
  * 
