@@ -44,15 +44,15 @@ export const sendSuccess = function (res: e.Response, data: Object, httpCode?: n
  * @param errors        error object but you can send in optional
  * @returns 
  */
-export const sendError = function (res: e.Response, code: number, message: string, httpCode: number, description: string, errors?: Error) {
+export const sendError = function (res: e.Response, code: number|null, shortMessage: string|null, httpCode: number, description: string|null, errors?: Error) {
     if (!res) {
         return;
     }
 
     const out: any = {};
     out.code = code;
-    out.message = message ? message.toString() : 'none';
-    out.desc = description.toString();
+    out.shortMessage = shortMessage ? shortMessage.toString() : 'none';
+    out.desc = description ? description.toString() : 'none';
 
     if (errors) {
         out.errors = errors;

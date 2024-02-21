@@ -7,7 +7,7 @@ const oAuthSetting = JSON.parse(fs.readFileSync('keys/oAuthGmail.json', 'utf8'))
 export default {
     servicename: 'GranfondoPhotoSearch',                // Service name.
     port: 3000,                                         // Port for the service.                             
-    jwtAuthKey: 'goodlucktogetjob',                     // jwtAuthKey is required for jwt token generation it can be random.
+    jwtAuthKey: 'goodluckgettingjob',                   // jwtAuthKey is required for jwt token generation it can be random.
     emailVerificationExpiryDay: 3,                      // Email verification expiry day. after that temporary user will be deleted automatically.
     paths: {
         tmp: '/tmp',

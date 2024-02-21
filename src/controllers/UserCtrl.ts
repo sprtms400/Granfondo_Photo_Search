@@ -33,19 +33,19 @@ export const create = function (req: e.Request, res: e.Response) {
     if(!oUserData) {
         return oRest.sendError(res, 24, 'Invalid data', 400, 'Data is not provided');
     }
-    if(!oUserData.username || oUserData.username.length < 4 || oUserData.username.length > 64) {
+    if(!oUserData.username || typeof oUserData.password !== 'string' || oUserData.username.length < 4 || oUserData.username.length > 64) {
         return oRest.sendError(res, 24, 'Invalid username', 400, 'Given username is not provided or does not meet the format');
     }
-    if(!oUserData.password || oUserData.password.length < 4 || oUserData.password.length > 128) {
+    if(!oUserData.password || typeof oUserData.password !== 'string' || oUserData.password.length < 4 || oUserData.password.length > 128) {
         return oRest.sendError(res, 24, 'Invalid password', 400, 'Given password is not provided or does not meet the format');
     }
-    if(!oUserData.email || oUserData.email.length < 4 || oUserData.email.length > 128 || oPieces.isValidEmail(oUserData.email) === false){
+    if(!oUserData.email || typeof oUserData.password !== 'string' || oUserData.email.length < 4 || oUserData.email.length > 128 || oPieces.isValidEmail(oUserData.email) === false){
         return oRest.sendError(res, 24, 'Invalid email', 400, 'Given email is not provided or does not meet the format');
     }
 
-    oUserManager.create( oUserData, function (errorCode: number, errorMessage: string, httpCode: number, errorDescription: any, user: IUser|null) {
+    oUserManager.create( oUserData, function (errorCode: number|null, shortMessage: string|null, httpCode: number, description: any, user: IUser|null) {
         if (errorCode) {
-            return oRest.sendError(res, errorCode, errorMessage, httpCode, errorDescription);
+            return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
         }
         if (user) {
             const resUser: any = {};
@@ -58,12 +58,73 @@ export const create = function (req: e.Request, res: e.Response) {
 }
 
 /**
+ * @method POST
+ * @params req express request object which continas user login information
+ * @params res express response object
  * 
- * @param req 
- * @param res 
+ * @description Handles user login. The expected contents of req.body are as follows:
+ * @example
+ * {
+ *   "email": "user@example.com" // A string representing the user's email address.
+ *   "password": "password",     // A string representing the user's password.
+ * }
+ */
+export const login = function (req: e.Request, res: e.Response) {
+    const oUserData = req.body || '';
+
+    if(!oUserData) {
+        return oRest.sendError(res, 24, 'Invalid data', 400, 'Data is not provided');
+    }
+    if(!oUserData.password || typeof oUserData.password !== 'string') {
+        return oRest.sendError(res, 24, 'Invalid password', 400, 'Given password is not provided or does not meet the format');
+    }
+    if(!oUserData.email || typeof oUserData.password !== 'string' || oPieces.isValidEmail(oUserData.email) === false){
+        return oRest.sendError(res, 24, 'Invalid email', 400, 'Given email is not provided or does not meet the format');
+    }
+
+    oUserManager.login(oUserData.email, oUserData.password, function (errorCode: number|null, shortMessage: string|null, httpCode: number, description: any, user: IUser|null) {
+        if (errorCode) {
+            return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+        }
+        if (user) {
+            const resUser: any = {};
+            resUser.id = user._id;
+            resUser.username = user.username;
+            resUser.email = user.email;
+            return oRest.sendSuccess(res, resUser, httpCode);
+        }
+    });
+}
+
+/**
+ * @method GET
+ * @param req express request object 
+ * @param res express response object
+ * 
+ * @description This api will be called when user click on the verification link which in mail. 
+ * the parameter will be the doc_id of user.
+ * @examples
+ * http://localhost:3000/api/v1/user/verify/5e9e3e3e3e3e3e3e3e3e3e3e
  */
 export const emailAuthentcationCallback = function (req: e.Request, res: e.Response) {
+    const userDocId = req.params.userDocId || '';
+    
+    if(!userDocId || typeof userDocId !== 'string') {
+        return oRest.sendError(res, 24, 'Invalid data', 400, 'Data is not provided');
+    }
 
+    oUserManager.emailAuthentcationCallback(userDocId, function (errorCode: number|null, shortMessage: string|null, httpCode: number, description: any, user: IUser|null) {
+        if (errorCode) {
+            return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+        }
+        if (user) {
+            const resUser: any = {};
+            resUser.id = user._id;
+            resUser.username = user.username;
+            resUser.email = user.email;
+            return oRest.sendSuccess(res, resUser, httpCode);
+        }
+    });
 }
 
 /**
