@@ -67,6 +67,18 @@ export const sendError = function (res: e.Response, code: number|null, shortMess
     return res.json(out);
 }
 
+/**
+ * Redirects the client to the specified URL.
+ * 
+ * @param res Response object from Express. Used to send an HTTP response to the client.
+ * @param url Target URL to redirect to.
+ * 
+ * redirection http status code is 302
+ */
+export const sendRedirect = function (res: e.Response, url: string) {
+    res.redirect(url);
+}
+
 // export const sendSuccessToken = function (res: e.Response, token: string, user: any) {
 //     if (!res) {
 //         return;

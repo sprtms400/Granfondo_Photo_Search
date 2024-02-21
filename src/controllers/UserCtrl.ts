@@ -122,27 +122,11 @@ export const emailAuthentcationCallback = function (req: e.Request, res: e.Respo
             resUser.id = user._id;
             resUser.username = user.username;
             resUser.email = user.email;
-            return oRest.sendSuccess(res, resUser, httpCode);
+            // return oRest.sendSuccess(res, resUser, httpCode);
+            return oRest.sendRedirect(res, '/login'); // have to change
         }
     });
 }
-
-/**
- * @method POST
- * @params req express request object which continas new user information 
- * @params res express response object
- * 
- * @description Request to reset user password. The expected contents of req.body are as follows:
- * @example
- * {
- *   "email": "user@example.com" // A string representing the user's email address.
- * }
- */
-export const requestPasswordReset = function (req: e.Request, res: e.Response) {
-    const oUserData = req.body || '';
-
-}
-
 
 /**
  * @method PATCH
