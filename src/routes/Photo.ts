@@ -25,6 +25,6 @@ router.get('/photo/getPresignedUrl/:photoId', oPhotoCtrl.getPresignedUrl);
 // 3. Notifying success of upload
 router.post('/photo/uploadSuccess/:photoId', oPhotoCtrl.uploadSuccess);
 
-// upload bulk image through server
-// router.post('/photo/upload', oPhotoCtrl.upload);
+// upload image through server
+router.post('/photo/upload', oPhotoCtrl.upload);
 export default router;

@@ -1,17 +1,7 @@
 import * as e from 'express';
 import oRest = require('../utils/restware');
 import oPhotoManager = require('../managers/PhotoManager');
-/**
- * Purpose : Cotroller for photo service.
- * 
- * 1. Photo upload
- * 2. Photo search
- */
-
-export const upload = function (req: e.Request, res: e.Response) {
-}
-export const search = function (req: e.Request, res: e.Response) {
-}
+import { access } from 'fs';
 /**
  * @method POST
  * @param req 
@@ -128,4 +118,43 @@ export const uploadSuccess = function (req: e.Request, res: e.Response) {
                return oRest.sendSuccess(res, resPhoto, httpCode);
             }
     });
+}
+
+export const upload = function (req: e.Request, res: e.Response) {
+     const accessUserId = req.body.accessUserId;
+     const file = req.body.file;
+     const competition = req.body.competition;
+     const author = req.body.author;
+     const photographedTime = req.body.photographedTime;
+     const srcLink = req.body.srcLink;
+
+     if(!accessUserId) {
+          return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
+     }
+     if(!file) {
+          return oRest.sendError(res, 24, 'file is required', 400, 'file is required');
+     }
+     if(!competition) {
+          return oRest.sendError(res, 24, 'competition is required', 400, 'competition is required');
+     }
+     if(!author) {
+          return oRest.sendError(res, 24, 'author is required', 400, 'author is required');
+     }
+     if(!photographedTime) {
+          return oRest.sendError(res, 24, 'photographedTime is required', 400, 'photographedTime is required');
+     }
+     if(!srcLink) {
+          return oRest.sendError(res, 24, 'srcLink is required', 400, 'srcLink is required');
+     }
+
+     oPhotoManager.upload(accessUserId, file, competition, author, photographedTime, srcLink, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               const resPhoto: any = {}
+               resPhoto.photoId = photo._id;
+               return oRest.sendSuccess(res, resPhoto, httpCode);
+          }
+     }
 }

@@ -81,3 +81,7 @@ export const uploadSuccess = function (photoId: string, userId: string,
         return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
     }
 }
+
+export const upload = function () {
+    
+}
