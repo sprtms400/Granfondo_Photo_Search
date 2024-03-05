@@ -37,7 +37,7 @@ export default {
         appEngine: {
         },
         storageBucket: {
-            keyFilename: '../../../keys/granfondophotosearch-babc61c67a03.json',
+            keyFilename: 'keys/granfondophotosearch-babc61c67a03.json',
             bucketName: 'granfondo-photos',
             projectId: 'granfondophotosearch',
         }

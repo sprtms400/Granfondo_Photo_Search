@@ -28,6 +28,9 @@ export const initUpload = function (req: e.Request, res: e.Response) {
      if(!userId) {
           return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
      }
+     if(!metaData.photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
      if(!metaData.srcLink) {
           return oRest.sendError(res, 24, 'srcLink is required', 400, 'srcLink is required');
      }
@@ -50,8 +53,8 @@ export const initUpload = function (req: e.Request, res: e.Response) {
           return oRest.sendError(res, 24, 'fileSize is required', 400, 'fileSize is required');
      }
 
-     oPhotoManager.initUpload(metaData.srcLink, metaData.competition, metaData.author, metaData.photographedTime, metaData.width, metaData.height, metaData.fileSize, userId, 
-     function (errorCode, shortMessage, httpCode, description, photo) {
+     oPhotoManager.initUpload(userId, metaData.phtoId, metaData.srcLink, metaData.competition, metaData.author, metaData.photographedTime, metaData.width, metaData.height, metaData.fileSize, userId, 
+          function (errorCode, shortMessage, httpCode, description, photo) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
@@ -122,7 +125,8 @@ export const uploadSuccess = function (req: e.Request, res: e.Response) {
 
 export const upload = function (req: e.Request, res: e.Response) {
      const accessUserId = req.body.accessUserId;
-     const file = req.body.file;
+     const file = req.file;
+     const photoId = req.body.photoId;
      const competition = req.body.competition;
      const author = req.body.author;
      const photographedTime = req.body.photographedTime;
@@ -133,6 +137,9 @@ export const upload = function (req: e.Request, res: e.Response) {
      }
      if(!file) {
           return oRest.sendError(res, 24, 'file is required', 400, 'file is required');
+     }
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
      }
      if(!competition) {
           return oRest.sendError(res, 24, 'competition is required', 400, 'competition is required');
@@ -147,14 +154,12 @@ export const upload = function (req: e.Request, res: e.Response) {
           return oRest.sendError(res, 24, 'srcLink is required', 400, 'srcLink is required');
      }
 
-     oPhotoManager.upload(accessUserId, file, competition, author, photographedTime, srcLink, function (errorCode, shortMessage, httpCode, description, photo) {
+     oPhotoManager.upload(accessUserId, file, photoId, competition, author, photographedTime, srcLink, function (errorCode, shortMessage, httpCode, description, photoURL) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
-          if (photo) {
-               const resPhoto: any = {}
-               resPhoto.photoId = photo._id;
-               return oRest.sendSuccess(res, resPhoto, httpCode);
+          if (photoURL) {
+               return oRest.sendSuccess(res, photoURL, httpCode);
           }
-     }
+     });
 }
