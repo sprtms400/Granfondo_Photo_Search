@@ -1,5 +1,6 @@
 import * as Mongoose from 'mongoose';
 import reservedKeywords from '../utils/reservedKeywords';
+import { upload } from '@google-cloud/storage/build/cjs/src/resumable-upload';
 
 /**
  * Define interface for user model
@@ -15,6 +16,8 @@ interface IPhoto extends Mongoose.Document {
     createdDate: Date;
     updatedDate: Date;
     uploader: Mongoose.Schema.Types.ObjectId;
+    isPhotoUploaded: boolean;
+    isPhotoAnalyzed: boolean;
 }
 
 /**
@@ -73,6 +76,16 @@ const PhotoSchema = new Schema({
         ref: 'users',
         required: true,
     },
+    isPhotoUploaded: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
+    isPhotoAnalyzed: {
+        type: Boolean,
+        default: false,
+        required: true,
+    }
 });
 
 /**

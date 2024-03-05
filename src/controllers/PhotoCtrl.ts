@@ -13,7 +13,7 @@ export const upload = function (req: e.Request, res: e.Response) {
 export const search = function (req: e.Request, res: e.Response) {
 }
 /**
- * 
+ * @method POST
  * @param req 
  * @param res 
  * @example
@@ -75,13 +75,57 @@ export const initUpload = function (req: e.Request, res: e.Response) {
 
 /**
      * 
+     * @method GET
      * @param req express request
      * @param res express response
      * 
-     * Purpose : Get presigned url for photo upload to GCS
+     * Purpose : Get presigned url for photo upload to GCS, Before request this API, Meta data should be saved in mongodb.
+     * @example
+     * parameters : {
+     *    photoId: "5d7e3f7b9f3e4d1f8c9e3f7b",
+     * }
      */
 export const getPresignedUrl = function (req: e.Request, res: e.Response) {
     /**
      * JWT Token validation required.
      */
+    const userId = req.body.accessUserId;
+    const photoId = req.params.photoId;
+}
+
+/**
+     * 
+     * @method POST
+     * @param req express request
+     * @param res express response
+     * 
+     * Purpose : Notify success of photo upload, It will be called after photo upload to GCS with presignedURL.
+     * @example
+     * {
+     *    photoId: "5d7e3f7b9f3e4d1f8c9e3f7b",
+     * }
+     */
+export const uploadSuccess = function (req: e.Request, res: e.Response) {
+    /**
+     * JWT Token validation required.
+     */
+    const userId = req.body.accessUserId;
+    const photoId = req.params.photoId;
+    if(!userId) {
+        return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
+    }
+    if(!photoId) {
+        return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+    }
+
+    oPhotoManager.uploadSuccess(photoId, userId, function (errorCode, shortMessage, httpCode, description, photo) {
+            if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+            }
+            if (photo) {
+               const resPhoto: any = {}
+               resPhoto.photoId = photo._id;
+               return oRest.sendSuccess(res, resPhoto, httpCode);
+            }
+    });
 }
