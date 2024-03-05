@@ -1,6 +1,5 @@
 import path from 'path'
 import * as fs from 'fs'
-import * as fsExtra from 'fs-extra'
 import redis from 'redis'
 import mongoose from 'mongoose'
 import http from 'http'
@@ -9,6 +8,7 @@ import express from 'express'
 import cors from 'cors';
 
 import routes from './src/routes';
+import * as middlewares from './src/middlewares';
 import config from './src/config';
 import * as utils from './src/utils';
 import exp from 'constants'
@@ -40,6 +40,7 @@ app.use(cors(corsOptions));
 // Serve static files from the parent directory of the current script.
 // This makes files like images, CSS, and JavaScript accessible via HTTP.
 // app.use(express.static(path.resolve(__dirname, '..')));
+app.all('/v1/auth/*', middlewares.validateRequest);
 
 const server = http.createServer(app);
 

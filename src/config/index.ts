@@ -2,7 +2,8 @@ import fs from 'fs';
 import Environment from './environment_interface';
 //Environment variables not using now.
 
-const oAuthSetting = JSON.parse(fs.readFileSync('keys/oAuthGmail.json', 'utf8'));
+// const oAuthSetting = JSON.parse(fs.readFileSync('keys/oAuthGmail.ts', 'utf8'));
+const oAuthSetting = JSON.parse(fs.readFileSync('keys/gmailAuth.json', 'utf8'));
 
 export default {
     servicename: 'GranfondoPhotoSearch',                // Service name.
@@ -47,11 +48,11 @@ export default {
         port: 587,
         secure: true,
         oauth: {
-            type: oAuthSetting.oauth.type,
-            user: oAuthSetting.oauth.user,
-            clientId: oAuthSetting.oauth.clientId,
-            clientSecret: oAuthSetting.oauth.clientSecret,
-            refreshToken: oAuthSetting.oauth.refreshToken,
+            type: oAuthSetting.oAuth.type,
+            user: oAuthSetting.oAuth.user,
+            clientId: oAuthSetting.oAuth.clientId,
+            clientSecret: oAuthSetting.oAuth.clientSecret,
+            refreshToken: oAuthSetting.oAuth.refreshToken,
         },
         options: {
             from: 'sprtms400@gmail.com',

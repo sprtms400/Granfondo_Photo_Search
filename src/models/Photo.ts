@@ -9,11 +9,9 @@ interface IPhoto extends Mongoose.Document {
     competition: string;
     author: string;
     photographedTime: Date;
-    md5: string;
     width: number;
     height: number;
-    size: number;
-    hasThumbnail: boolean;
+    fileSize: number;
     createdDate: Date;
     updatedDate: Date;
     uploader: Mongoose.Schema.Types.ObjectId;
@@ -48,11 +46,6 @@ const PhotoSchema = new Schema({
         required: true,
         unique: true,
     },
-    md5: {
-        type: String,
-        required: true,
-        unique: true,
-    },
     width: {
         type: Number,
         required: true,
@@ -61,12 +54,8 @@ const PhotoSchema = new Schema({
         type: Number,
         required: true,
     },
-    size: {
+    fileSize: {
         type: Number,
-        required: true,
-    },
-    hasThumbnail: {
-        type: Boolean,
         required: true,
     },
     createdDate: {

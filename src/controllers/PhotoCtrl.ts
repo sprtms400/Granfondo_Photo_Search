@@ -12,7 +12,65 @@ export const upload = function (req: e.Request, res: e.Response) {
 }
 export const search = function (req: e.Request, res: e.Response) {
 }
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @example
+ * {
+ *   "srcLink": "https://www.google.com/photo.jpg",
+ *   "competition": "화천DMZ",
+ *   "author": "홍길동",
+ *   "photographedTime": "2018-01-01T00:00:00.000Z",
+ *   "width": "1920",
+ *   "height": "1080",
+ *   "fileSize": "1024"
+ * }
+ * 
+ */
 export const initUpload = function (req: e.Request, res: e.Response) {
+     /**
+     * JWT Token validation required.
+     */
+     const userId = req.body.accessUserId;
+     const metaData = req.body || {};
+
+     if(!userId) {
+          return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
+     }
+     if(!metaData.srcLink) {
+          return oRest.sendError(res, 24, 'srcLink is required', 400, 'srcLink is required');
+     }
+     if(!metaData.competition) {
+          return oRest.sendError(res, 24, 'competition is required', 400, 'competition is required');
+     }
+     if(!metaData.author) {
+          return oRest.sendError(res, 24, 'author is required', 400, 'author is required');
+     }
+     if(!metaData.photographedTime) {
+          return oRest.sendError(res, 24, 'photographedTime is required', 400, 'photographedTime is required');
+     }
+     if(!metaData.width) {
+          return oRest.sendError(res, 24, 'width is required', 400, 'width is required');
+     }
+     if(!metaData.height) {
+          return oRest.sendError(res, 24, 'height is required', 400, 'height is required');
+     }
+     if(!metaData.fileSize) {
+          return oRest.sendError(res, 24, 'fileSize is required', 400, 'fileSize is required');
+     }
+
+     oPhotoManager.initUpload(metaData.srcLink, metaData.competition, metaData.author, metaData.photographedTime, metaData.width, metaData.height, metaData.fileSize, userId, 
+     function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               const resPhoto: any = {}
+               resPhoto.photoId = photo._id;
+               return oRest.sendSuccess(res, resPhoto, httpCode);
+          }
+     });
 }
 
 /**
