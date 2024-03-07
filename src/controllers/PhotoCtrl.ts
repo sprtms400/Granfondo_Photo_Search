@@ -163,3 +163,68 @@ export const upload = function (req: e.Request, res: e.Response) {
           }
      });
 }
+
+export const getPhoto = function (req: e.Request, res: e.Response) {
+     // const accessUserId = req.body.accessUserId;
+     const photoId = req.params.photoId;
+     // if(!accessUserId) {
+     //      return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
+     // }
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     oPhotoManager.getPhoto(photoId, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
+export const updateAppearance = function (req: e.Request, res: e.Response) {
+     const accessUserId = req.body.accessUserId;
+     const photoId = req.body.photoId;
+     const appearance = req.body.appearance;
+     if(!accessUserId) {
+          return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
+     }
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     if(!appearance) {
+          return oRest.sendError(res, 24, 'appearance is required', 400, 'appearance is required');
+     }
+     oPhotoManager.updateAppearance(accessUserId, photoId, appearance, function (errorCode, shortMessage, httpCode, description, appearance) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (appearance) {
+               return oRest.sendSuccess(res, appearance, httpCode);
+          } 
+     });
+}
+
+export const updateNumberPlate = function (req: e.Request, res: e.Response) {
+     const accessUserId = req.body.accessUserId;
+     const photoId = req.body.photoId;
+     const numberPlate = req.body.numberPlate;
+     if(!accessUserId) {
+          return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
+     }
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     if(!numberPlate) {
+          return oRest.sendError(res, 24, 'numberPlate is required', 400, 'numberPlate is required');
+     }
+     oPhotoManager.updateNumberPlate(accessUserId, photoId, numberPlate, function (errorCode, shortMessage, httpCode, description, numberPlate) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (numberPlate) {
+               return oRest.sendSuccess(res, numberPlate, httpCode);
+          }
+     });
+}

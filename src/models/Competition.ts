@@ -1,6 +1,14 @@
 import * as Mongoose from 'mongoose';
 const Schema = Mongoose.Schema;
 
+interface ICompetition extends Mongoose.Document {
+    date: Date;
+    name: string;
+    location: string;
+    createdDate: Date;
+    updatedDate: Date;
+}
+
 const CompetitionSchema = new Schema({
     date: {
         type: Date,
@@ -36,4 +44,5 @@ CompetitionSchema.pre('save', function (next) {
     next();
 })
 
-export default Mongoose.model('competitions', CompetitionSchema);
+const Competition = Mongoose.model<ICompetition>('competitions', CompetitionSchema);
+export { Competition, ICompetition }
