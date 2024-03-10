@@ -35,3 +35,22 @@ export const uploadImage = async function (file: Express.Multer.File, competitio
     });
     blobStream.end(file.buffer);
 }
+
+// export function uploadImage (file: Express.Multer.File, competition: string, photoId: string) {
+//     return new Promise((resolve, reject) => {
+//         const blob = bucket.file(competition + '/' + photoId);
+//         const blobStream = blob.createWriteStream({
+//             metadata: {
+//                 contentType: file.mimetype
+//             }
+//         });
+//         blobStream.on('error', (error: Error) => {
+//             reject(error);
+//         });
+//         blobStream.on('finish', () => {
+//             const photoURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+//             resolve(photoURL);
+//         });
+//         blobStream.end(file.buffer);
+//     });
+// }

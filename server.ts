@@ -22,8 +22,6 @@ mongoose.connect(config.mongodb.host, {
 
 // Initialize http server.
 const app = express();
-// Apply server routes.
-app.use(routes);
 /**
  * Apply body parser  at middleware
  * 
@@ -41,6 +39,7 @@ app.use(cors(corsOptions));
 // This makes files like images, CSS, and JavaScript accessible via HTTP.
 // app.use(express.static(path.resolve(__dirname, '..')));
 app.all('/v1/auth/*', middlewares.validateRequest);
+app.use(routes);
 
 const server = http.createServer(app);
 

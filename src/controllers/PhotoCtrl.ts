@@ -73,17 +73,36 @@ export const initUpload = function (req: e.Request, res: e.Response) {
      * @param res express response
      * 
      * Purpose : Get presigned url for photo upload to GCS, Before request this API, Meta data should be saved in mongodb.
+     * THIS IS EXPERIMENTAL CODE, NOT USED IN PRODUCTION
      * @example
      * parameters : {
-     *    photoId: "5d7e3f7b9f3e4d1f8c9e3f7b",
+     *    assetName: "5d7e3f7b9f3e4d1f8c9e3f7b_numberplate",
      * }
      */
-export const getPresignedUrl = function (req: e.Request, res: e.Response) {
+export const getPresignedUrl_dev = function (req: e.Request, res: e.Response) {
     /**
      * JWT Token validation required.
      */
-    const userId = req.body.accessUserId;
-    const photoId = req.params.photoId;
+    console.log('req.body', req.body)
+    const password = req.body.password;
+    const assetName = req.body.assetName;
+     if(!assetName) {
+          return oRest.sendError(res, 24, 'assetName is required', 400, 'assetName is required');
+     }
+     if(!password) {
+          return oRest.sendError(res, 24, 'password is required', 400, 'password is required');
+     }
+     if(password != '741852963') {// 임시 비밀번호
+          return oRest.sendError(res, 24, 'password is invalid', 400, 'password is invalid');
+     }
+     oPhotoManager.getPresignedUrl_dev(assetName, function (errorCode, shortMessage, httpCode, description, presignedURL) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (presignedURL) {
+               return oRest.sendSuccess(res, presignedURL, httpCode);
+          }
+     });
 }
 
 /**
@@ -185,7 +204,7 @@ export const getPhoto = function (req: e.Request, res: e.Response) {
 
 export const updateAppearance = function (req: e.Request, res: e.Response) {
      const accessUserId = req.body.accessUserId;
-     const photoId = req.body.photoId;
+     const photoId = req.params.photoId;
      const appearance = req.body.appearance;
      if(!accessUserId) {
           return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
@@ -206,25 +225,46 @@ export const updateAppearance = function (req: e.Request, res: e.Response) {
      });
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ * 
+ * numberplates 는 배열 형태의 INumberplates 집합이다.
+ */
 export const updateNumberPlate = function (req: e.Request, res: e.Response) {
-     const accessUserId = req.body.accessUserId;
-     const photoId = req.body.photoId;
-     const numberPlate = req.body.numberPlate;
-     if(!accessUserId) {
-          return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
-     }
+     console.log('updateNumberPlate msgs', req.body, req.params)
+     const photoId = req.params.photoId;
+     const numberplate = req.body.numberplate;
+
      if(!photoId) {
           return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
      }
-     if(!numberPlate) {
+     if(!numberplate) {
           return oRest.sendError(res, 24, 'numberPlate is required', 400, 'numberPlate is required');
      }
-     oPhotoManager.updateNumberPlate(accessUserId, photoId, numberPlate, function (errorCode, shortMessage, httpCode, description, numberPlate) {
+     oPhotoManager.updateNumberPlate(photoId, numberplate, function (errorCode, shortMessage, httpCode, description, photo) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
-          if (numberPlate) {
-               return oRest.sendSuccess(res, numberPlate, httpCode);
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
+export const checkNumberPlateAnalyzed = function (req: e.Request, res: e.Response) {
+     const photoId = req.params.photoId;
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     oPhotoManager.checkNumberPlateAnalyzed(photoId, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
           }
      });
 }

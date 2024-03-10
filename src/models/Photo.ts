@@ -4,121 +4,52 @@ import { upload } from '@google-cloud/storage/build/cjs/src/resumable-upload';
 /**
  * Define interface for user appearance for inteligence analysis
  */
-interface IAppearance extends Mongoose.Document {
-    sex: {
-        type: String,
-        enum: ['male', 'fenmale', 'unknown'],
-        required: true,
-    },
+interface IAppearance {
+    sex: string,
     helmet: {
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+        color: string,
+        description: string
     },
     eyewear: {
-        isWearing: {
-            type: Boolean,
-            required: true,
-        },
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+        isWearing: boolean
+        color: string,
+        description: string
     },
-    shirts: {
-        sleeve: {
-            type: String,
-            required: true,
-            enum: ['short', 'long', 'unknown'],
-        },
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+    upper: {
+        sleeve: string,
+        color: string,
+        description: string
     },
-    pants: {
-        sleeve: {
-            type: String,
-            required: true,
-            enum: ['short', 'long', 'unknown'],
-        },
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+    lower: {
+        sleeve: string,
+        color: string,
+        description: string
     },
     sockes: {
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+        color: string,
+        description: string
     },
     shoes: {
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+        color: string,
+        description: string
     },
     gloves: {
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+        color: string,
+        description: string
     },
     bicycle: {
-        color: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        }
+        color: string,
+        description: string
     },
 }
 
 /**
  * Define interface for user number plate for inteligence analysis
  */
-interface INumberPlate extends Mongoose.Document {
-    isNumberPlateDetected: {
-        type: Boolean,
-        required: true,
-    },
-    numberPlate: {
-        type: String,
-        required: true,
-    },
-
+interface INumberPlate {
+    isNumberPlateDetected: boolean,
+    numberPlate: string,
+    probability: string
 }
 
 /**
@@ -141,7 +72,7 @@ interface IPhoto extends Mongoose.Document {
     isPhotoAnalyzedAppearance: boolean;
     isPhotoAnalyzedNumberPlate: boolean;
     appearance: IAppearance;
-    numberPlate: INumberPlate;
+    numberPlate: INumberPlate[];
 }
 
 /**
@@ -162,22 +93,18 @@ const PhotoSchema = new Schema({
     srcLink: {
         type: String,
         required: true,
-        unique: true,
     },
     competition: {
         type: String,
         required: true,
-        unique: true,
     },
     author: {
         type: String,
         required: true,
-        unique: true,
     },
     photographedTime: {
         type: Date,
         required: true,
-        unique: true,
     },
     width: {
         type: Number,
@@ -229,113 +156,159 @@ const PhotoSchema = new Schema({
         sex: {
             type: String,
             enum: ['male', 'fenmale', 'unknown'],
+            default: 'unknown', // default value is 'unknown
             required: true,
         },
         helmet: {
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
         eyewear: {
             isWearing: {
                 type: Boolean,
+                deafult: false,
                 required: true,
             },
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
-        shirts: {
+        upper: {
             sleeve: {
                 type: String,
                 required: true,
+                default: 'unknown', // default value is 'unknown
                 enum: ['short', 'long', 'unknown'],
             },
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
-        pants: {
+        lower: {
             sleeve: {
                 type: String,
                 required: true,
+                default: 'unknown', // default value is 'unknown
                 enum: ['short', 'long', 'unknown'],
             },
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
         sockes: {
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
         shoes: {
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
         gloves: {
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
         bicycle: {
             color: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             },
             description: {
                 type: String,
+                default: 'unknown', // default value is 'unknown
                 required: true,
             }
         },
     },
-    numberPlate: {
-        isNumberPlateDetected: {
-            type: Boolean,
-            required: true,
-        },
-        numberPlate: {
-            type: String,
-            required: true,
-        },
-    }
+    // numberPlate: {
+    //     isNumberPlateDetected: {
+    //         type: boolean,
+    //         default: false, // default value is 'unknown
+    //         required: true,
+    //     },
+    //     numberPlate: {
+    //         type: String,
+    //         default: 'unknown', // default value is 'unknown
+    //         required: true,
+    //     },
+    //     probability: {
+    //         type: Number,
+    //         default: 0, // default value is 'unknown
+    //         required: true,
+    //     },
+    // }
+    numberPlate: [
+        {
+            isNumberPlateDetected: {
+                type: Boolean,
+                default: false, // default value is 'unknown
+                required: true,
+            },
+            numberPlate: {
+                type: String,
+                default: 'unknown', // default value is 'unknown
+                required: true,
+            },
+            probability: {
+                type: Number,
+                default: 0, // default value is 'unknown
+                required: true,
+            },
+        }
+    ]
 });
 
 /**

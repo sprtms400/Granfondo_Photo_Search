@@ -21,7 +21,8 @@ const router = e.Router();
 router.post('/photo/initUpload', oPhotoCtrl.initUpload);
 
 // 2. Getting PresignedUrl
-router.get('/photo/getPresignedUrl/:photoId', oPhotoCtrl.getPresignedUrl);
+// router.get('/photo/getPresignedUrl/:photoId', oPhotoCtrl.getPresignedUrl);
+router.post('/photo/getPresignedUrl', oPhotoCtrl.getPresignedUrl_dev);
 
 // 3. Notifying success of upload
 router.post('/photo/uploadSuccess/:photoId', oPhotoCtrl.uploadSuccess);
@@ -36,5 +37,7 @@ router.get('/photo/:photoId', oPhotoCtrl.getPhoto);
 router.post('/photo/:photoId/appearance', oPhotoCtrl.updateAppearance);
 // Update analysis result of photo about number plate
 router.post('/photo/:photoId/numberPlate', oPhotoCtrl.updateNumberPlate);
+
+router.patch('/photo/:photoId/checkNumberPlateAnalyzed', oPhotoCtrl.checkNumberPlateAnalyzed);
 
 export default router;

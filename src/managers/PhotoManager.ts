@@ -1,7 +1,7 @@
 import multer from 'multer';
 import sharp from 'sharp';
 import { Storage } from '@google-cloud/storage';
-import { IPhoto, Photo as oPhoto } from '../models/Photo';
+import { IPhoto, INumberPlate, Photo as oPhoto } from '../models/Photo';
 import config from '../config';
 import { gStorage, rabbitmq } from '../services';
 
@@ -20,6 +20,51 @@ const makeMetaData = function (userId: string, photoId: string, srcLink: string,
             fileType: fileType,
             createdDate: new Date(),
             updatedDate: new Date(),
+            isPhotoAnalyzedAppearance: false,
+            isPhotoAnalyzedNumberPlate: false,
+            appearance: {
+                sex: 'unknown',
+                helemt: {
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                eyewear: {
+                    isWearing: false,
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                upper: {
+                    sellve: 'unknown',
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                lower: {
+                    sleeve: 'unknown',
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                socks: {
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                shoes: {
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                gloves: {
+                    color: 'unknown',
+                    description: 'unknown',
+                },
+                bicyle: {
+                    color: 'unknown',
+                    description: 'unknown',
+                }
+            },
+            numberPlate: {
+                isNumberPlateDetected: false,
+                numberPlate: 'unknown',
+                probability: 0,
+            }
             // uploader: userId
         });
         photo.save().then((photo: IPhoto) => {
@@ -52,6 +97,33 @@ export const initUpload = function (userId: string, photoId: string, srcLink: st
     }
 }
 
+// This is experimental code for development
+export const getPresignedUrl_dev = async function (assetName: string, 
+    callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, url: string|null) => void) {
+    try {
+        console.log('getPresignedUrl_dev')
+        const storage = new Storage({keyFilename: config.gcp.storageBucket.keyFilename})
+        const bucketName = config.gcp.storageBucket.bucketName;
+        const bucket = storage.bucket(bucketName);
+        const fileName = assetName;
+        const options: {
+            version: 'v4' | 'v2' | undefined;
+            action: 'write' | 'read' | 'delete' | 'resumable';
+            expires: number;
+            contentType: string;
+        } = {
+            version: 'v4',
+            action: 'write',
+            expires: Date.now() + 15 * 60 * 1000, // url available in 15 minutes
+            contentType: 'application/octet-stream',
+        };
+        console.log('fileName', fileName)
+        const [url] = await bucket.file(fileName).getSignedUrl(options);
+        return callback(null, null, 200, null, url);
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
 
 export const getPresignedUrl = async function (photoId: string, 
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, url: string|null) => void) {
@@ -143,20 +215,23 @@ export const upload = async function (accessUserId: string, file: Express.Multer
             if (errorCode) {
                 return callback(errorCode, shortMessage, httpCode, description, null);
             }
-        });
-
-        // 3 
-        await gStorage.uploadImage(file, competition, photoId, async function (errorCode, shortMessage, httpCode, description, photoURL) {
-            if (errorCode) {
-                return callback(errorCode, shortMessage, httpCode, description, null);
-            }
-            // 4
-            const uploadResultAppearnace = await rabbitmq.requestAnalyzeAppearance(photoId);
-            const uploadResultNumberPlate = await rabbitmq.requestAnalyzeNumberPlate(photoId);
-            if (uploadResultAppearnace && uploadResultNumberPlate) {
-                return callback(null, null, 200, null, photoURL);
+            // 3
+            if (!photo) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', null);
             } else {
-                return callback(24, 'upload_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+                gStorage.uploadImage(file, competition, photoId, async function (errorCode, shortMessage, httpCode, description, photoURL) {
+                    if (errorCode) {
+                        return callback(errorCode, shortMessage, httpCode, description, null);
+                    }
+                    // 4
+                    const uploadResultAppearnace = await rabbitmq.requestAnalyzeAppearance(photoId);
+                    const uploadResultNumberPlate = await rabbitmq.requestAnalyzeNumberPlate(photoId);
+                    if (uploadResultAppearnace && uploadResultNumberPlate) {
+                        return callback(null, null, 200, null, photoURL);
+                    } else {
+                        return callback(24, 'upload_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+                    }
+                });
             }
         });
     } catch (error) {
@@ -199,10 +274,11 @@ export const updateAppearance = function (accessUserId: string, photoId: string,
     }
 }
 
-export const updateNumberPlate = function (accessUserId: string, photoId: string, numberPlate: IPhoto['numberPlate'],
+export const updateNumberPlate = function (photoId: string, newNumberPalte: INumberPlate,
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
     try {
-        oPhoto.findByIdAndUpdate({'photoId': photoId}, {analyzeDoneNumberPlate: true}).then((photo: IPhoto|null) => {
+        console.log('updateNumberPlate', newNumberPalte)
+        oPhoto.findOneAndUpdate({photoId: photoId}, {$push: {numberPlate: newNumberPalte}}, {new: true}).then((photo: IPhoto|null) => {
             if(!photo) {
                 return callback(24, 'photo_not_found', 404, 'Photo not found', null);
             }
@@ -210,6 +286,23 @@ export const updateNumberPlate = function (accessUserId: string, photoId: string
         })
         .catch((error: Error) => {
             return callback(24, 'update_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        });
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const checkNumberPlateAnalyzed = function (photoId: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
+    try {
+        oPhoto.findOneAndUpdate({photoId: photoId}, {isPhotoAnalyzedNumberPlate: true}).then((photo: IPhoto|null) => {
+            if(!photo) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', null);
+            }
+            return callback(null, null, 200, null, photo);
+        })
+        .catch((error: Error) => {
+            return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
         });
     } catch (error) {
         return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
