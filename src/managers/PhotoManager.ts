@@ -1,7 +1,7 @@
 import multer from 'multer';
 import sharp from 'sharp';
 import { Storage } from '@google-cloud/storage';
-import { IPhoto, INumberPlate, Photo as oPhoto } from '../models/Photo';
+import { IPhoto, INumberPlate, Photo as oPhoto, IAppearance } from '../models/Photo';
 import config from '../config';
 import { gStorage, rabbitmq } from '../services';
 
@@ -257,16 +257,61 @@ export const getPhoto = function (photoId: string,
     }
 }
 
-export const updateAppearance = function (accessUserId: string, photoId: string, appearance: IPhoto['appearance'],
+export const updateAppearance = function (photoId: string, appearance: any,
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
     try {
-        oPhoto.findByIdAndUpdate({'photoId': photoId}, {analyzeDoneAppearance: true}).then((photo: IPhoto|null) => {
+        const newAppearanceData = {
+            "sex": appearance["sex"],
+            "helmet": {
+                "isWearing": appearance["helmet"]["isWearing"],
+                "color": appearance["helmet"]["color"],
+                "description": appearance["helmet"]["description"]
+            },
+            "eyewear": {
+                "isWearing": appearance["eyewear"]["isWearing"],
+                "color": appearance["eyewear"]["color"],
+                "description": appearance["eyewear"]["description"]
+            },
+            "upper": {
+                "sleeve": appearance["upper"]["sleeve"],
+                "color": appearance["upper"]["color"],
+                "description": appearance["upper"]["description"]
+            },
+            "lower": {
+                "sleeve": appearance["lower"]["sleeve"],
+                "color": appearance["lower"]["color"],
+                "description": appearance["lower"]["description"]
+            },
+            "sockes": {
+                "isWearing": appearance["socks"]["isWearing"],
+                "color": appearance["socks"]["color"],
+                "description": appearance["socks"]["description"]
+            },
+            "shoes": {
+                "isWearing": appearance["shoes"]["isWearing"],
+                "color": appearance["shoes"]["color"],
+                "description": appearance["shoes"]["description"]
+            },
+            "gloves": {
+                "isWearing": appearance["gloves"]["isWearing"],
+                "color": appearance["gloves"]["color"],
+                "description": appearance["gloves"]["description"]
+            },
+            "bicycle": {
+                "isRiding": appearance["bicycle"]["isRiding"],
+                "color": appearance["bicycle"]["color"],
+                "description": appearance["bicycle"]["description"]
+            }
+        }
+        oPhoto.findOneAndUpdate({photoId: photoId}, {appearance: newAppearanceData}).then((photo: IPhoto|null) => {
             if(!photo) {
+                console.log('photo not found')
                 return callback(24, 'photo_not_found', 404, 'Photo not found', null);
             }
             return callback(null, null, 200, null, photo);
         })
         .catch((error: Error) => {
+            console.log('error', error);
             return callback(24, 'update_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
         });
     } catch (error) {
@@ -277,7 +322,6 @@ export const updateAppearance = function (accessUserId: string, photoId: string,
 export const updateNumberPlate = function (photoId: string, newNumberPalte: INumberPlate,
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
     try {
-        console.log('updateNumberPlate', newNumberPalte)
         oPhoto.findOneAndUpdate({photoId: photoId}, {$push: {numberPlate: newNumberPalte}}, {new: true}).then((photo: IPhoto|null) => {
             if(!photo) {
                 return callback(24, 'photo_not_found', 404, 'Photo not found', null);
@@ -307,4 +351,21 @@ export const checkNumberPlateAnalyzed = function (photoId: string,
     } catch (error) {
         return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
     }
+}
+
+export const checkAppearanceAnalyzed = function (photoId: string,
+    callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
+try {
+    oPhoto.findOneAndUpdate({photoId: photoId}, {isPhotoAnalyzedAppearance: true}).then((photo: IPhoto|null) => {
+        if(!photo) {
+            return callback(24, 'photo_not_found', 404, 'Photo not found', null);
+        }
+        return callback(null, null, 200, null, photo);
+    })
+    .catch((error: Error) => {
+        return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    });
+} catch (error) {
+    return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+}
 }

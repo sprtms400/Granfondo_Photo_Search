@@ -7,6 +7,7 @@ import { upload } from '@google-cloud/storage/build/cjs/src/resumable-upload';
 interface IAppearance {
     sex: string,
     helmet: {
+        isWearing: boolean,
         color: string,
         description: string
     },
@@ -26,18 +27,22 @@ interface IAppearance {
         description: string
     },
     sockes: {
+        isWearing: boolean,
         color: string,
         description: string
     },
     shoes: {
+        isWearing: boolean,
         color: string,
         description: string
     },
     gloves: {
+        isWearing: boolean,
         color: string,
         description: string
     },
     bicycle: {
+        isRiding: boolean,
         color: string,
         description: string
     },
@@ -160,6 +165,11 @@ const PhotoSchema = new Schema({
             required: true,
         },
         helmet: {
+            isWearing: {
+                type: Boolean,
+                default: false, // default value is 'unknown
+                required: true,
+            },
             color: {
                 type: String,
                 default: 'unknown', // default value is 'unknown
@@ -224,7 +234,12 @@ const PhotoSchema = new Schema({
                 required: true,
             }
         },
-        sockes: {
+        socks: {
+            isWearing: {
+                type: Boolean,
+                default: false, // default value is 'unknown
+                required: true,
+            },
             color: {
                 type: String,
                 default: 'unknown', // default value is 'unknown
@@ -237,6 +252,11 @@ const PhotoSchema = new Schema({
             }
         },
         shoes: {
+            isWearing: {
+                type: Boolean,
+                default: false, // default value is 'unknown
+                required: true,
+            },
             color: {
                 type: String,
                 default: 'unknown', // default value is 'unknown
@@ -249,6 +269,11 @@ const PhotoSchema = new Schema({
             }
         },
         gloves: {
+            isWearing: {
+                type: Boolean,
+                default: false, // default value is 'unknown
+                required: true,
+            },
             color: {
                 type: String,
                 default: 'unknown', // default value is 'unknown
@@ -261,6 +286,11 @@ const PhotoSchema = new Schema({
             }
         },
         bicycle: {
+            isriding: {
+                type: Boolean,
+                default: false, // default value is 'unknown
+                required: true,
+            },
             color: {
                 type: String,
                 default: 'unknown', // default value is 'unknown
@@ -273,23 +303,6 @@ const PhotoSchema = new Schema({
             }
         },
     },
-    // numberPlate: {
-    //     isNumberPlateDetected: {
-    //         type: boolean,
-    //         default: false, // default value is 'unknown
-    //         required: true,
-    //     },
-    //     numberPlate: {
-    //         type: String,
-    //         default: 'unknown', // default value is 'unknown
-    //         required: true,
-    //     },
-    //     probability: {
-    //         type: Number,
-    //         default: 0, // default value is 'unknown
-    //         required: true,
-    //     },
-    // }
     numberPlate: [
         {
             isNumberPlateDetected: {

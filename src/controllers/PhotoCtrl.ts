@@ -2,6 +2,7 @@ import * as e from 'express';
 import oRest = require('../utils/restware');
 import oPhotoManager = require('../managers/PhotoManager');
 import { access } from 'fs';
+import { IAppearance } from '../models/Photo';
 /**
  * @method POST
  * @param req 
@@ -203,19 +204,15 @@ export const getPhoto = function (req: e.Request, res: e.Response) {
 }
 
 export const updateAppearance = function (req: e.Request, res: e.Response) {
-     const accessUserId = req.body.accessUserId;
      const photoId = req.params.photoId;
      const appearance = req.body.appearance;
-     if(!accessUserId) {
-          return oRest.sendError(res, 24, 'user is required', 400, 'user is required');
-     }
-     if(!photoId) {
+     if(!photoId){
           return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
      }
      if(!appearance) {
           return oRest.sendError(res, 24, 'appearance is required', 400, 'appearance is required');
      }
-     oPhotoManager.updateAppearance(accessUserId, photoId, appearance, function (errorCode, shortMessage, httpCode, description, appearance) {
+     oPhotoManager.updateAppearance(photoId, appearance, function (errorCode, shortMessage, httpCode, description, appearance) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
@@ -234,7 +231,6 @@ export const updateAppearance = function (req: e.Request, res: e.Response) {
  * numberplates 는 배열 형태의 INumberplates 집합이다.
  */
 export const updateNumberPlate = function (req: e.Request, res: e.Response) {
-     console.log('updateNumberPlate msgs', req.body, req.params)
      const photoId = req.params.photoId;
      const numberplate = req.body.numberplate;
 
@@ -260,6 +256,21 @@ export const checkNumberPlateAnalyzed = function (req: e.Request, res: e.Respons
           return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
      }
      oPhotoManager.checkNumberPlateAnalyzed(photoId, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
+export const checkAppearanceAnalyzed = function (req: e.Request, res: e.Response) {
+     const photoId = req.params.photoId;
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     oPhotoManager.checkAppearanceAnalyzed(photoId, function (errorCode, shortMessage, httpCode, description, photo) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }

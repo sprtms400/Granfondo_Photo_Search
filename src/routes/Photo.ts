@@ -39,5 +39,6 @@ router.post('/photo/:photoId/appearance', oPhotoCtrl.updateAppearance);
 router.post('/photo/:photoId/numberPlate', oPhotoCtrl.updateNumberPlate);
 
 router.patch('/photo/:photoId/checkNumberPlateAnalyzed', oPhotoCtrl.checkNumberPlateAnalyzed);
+router.patch('/photo/:photoId/checkAppearanceAnalyzed', oPhotoCtrl.checkAppearanceAnalyzed);
 
 export default router;
