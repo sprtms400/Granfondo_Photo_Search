@@ -38,3 +38,7 @@ nvm install 20.11
 ```
 npm install
 ```
+실행 방법
+```
+npx ts-node server.ts
+```
