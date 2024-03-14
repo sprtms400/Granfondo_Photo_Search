@@ -30,6 +30,9 @@ router.post('/photo/uploadSuccess/:photoId', oPhotoCtrl.uploadSuccess);
 // upload image through server, apply multer as middleware
 router.post('/photo/upload', oMiddlewares.multerUploadOnMemory.single('file'), oPhotoCtrl.upload);
 
+// Get all photos
+router.get('/photos', oPhotoCtrl.getPhotos);
+
 // Get photo Information by photoId
 router.get('/photo/:photoId', oPhotoCtrl.getPhoto);
 
@@ -40,5 +43,7 @@ router.post('/photo/:photoId/numberPlate', oPhotoCtrl.updateNumberPlate);
 
 router.patch('/photo/:photoId/checkNumberPlateAnalyzed', oPhotoCtrl.checkNumberPlateAnalyzed);
 router.patch('/photo/:photoId/checkAppearanceAnalyzed', oPhotoCtrl.checkAppearanceAnalyzed);
+
+router.post('/photo/search', oPhotoCtrl.searchPhoto);
 
 export default router;

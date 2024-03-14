@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/sprtms400/Granfondo_Photo_Search#readme",
   "dependencies": {
+    "@langchain/openai": "^0.0.20",
     "@types/node": "^20.11.16",
     "amqplib": "^0.10.3",
     "async": "^3.2.5",
@@ -35,6 +36,7 @@
     "fs-extra": "^11.2.0",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "langchain": "^0.1.27",
     "mongoose": "^8.1.1",
     "nodemailer": "^6.9.9",
     "nodemon": "^3.0.3",

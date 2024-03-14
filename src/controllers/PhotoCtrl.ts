@@ -184,6 +184,17 @@ export const upload = function (req: e.Request, res: e.Response) {
      });
 }
 
+export const getPhotos = function (req: e.Request, res: e.Response) {
+     oPhotoManager.getPhotos(function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
 export const getPhoto = function (req: e.Request, res: e.Response) {
      // const accessUserId = req.body.accessUserId;
      const photoId = req.params.photoId;
@@ -276,6 +287,21 @@ export const checkAppearanceAnalyzed = function (req: e.Request, res: e.Response
           }
           if (photo) {
                return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
+export const searchPhoto = function (req: e.Request, res: e.Response) {
+     const query = req.body.query;
+     if(!query) {
+          return oRest.sendError(res, 24, 'query is required', 400, 'query is required');
+     }
+     oPhotoManager.searchPhoto(query, function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
           }
      });
 }

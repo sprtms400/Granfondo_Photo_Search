@@ -354,18 +354,44 @@ export const checkNumberPlateAnalyzed = function (photoId: string,
 }
 
 export const checkAppearanceAnalyzed = function (photoId: string,
-    callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
-try {
-    oPhoto.findOneAndUpdate({photoId: photoId}, {isPhotoAnalyzedAppearance: true}).then((photo: IPhoto|null) => {
-        if(!photo) {
-            return callback(24, 'photo_not_found', 404, 'Photo not found', null);
-        }
-        return callback(null, null, 200, null, photo);
-    })
-    .catch((error: Error) => {
-        return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
-    });
-} catch (error) {
-    return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
+    try {
+        oPhoto.findOneAndUpdate({photoId: photoId}, {isPhotoAnalyzedAppearance: true}).then((photo: IPhoto|null) => {
+            if(!photo) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', null);
+            }
+            return callback(null, null, 200, null, photo);
+        })
+        .catch((error: Error) => {
+            return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        });
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
 }
+
+export const getPhotos = function (
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photos: IPhoto[]|null) => void) {
+    try {
+        oPhoto.find({}).then((photos: IPhoto[]|[]) => {
+            if(!photos) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', []);
+            }
+            return callback(null, null, 200, null, photos);
+        })
+        .catch((error: Error) => {
+            return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        });
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const searchPhoto = function (query: string, 
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photos: IPhoto[]|null) => void) {
+    try {
+    
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
 }
