@@ -13,40 +13,124 @@ import config from './src/config';
 import * as utils from './src/utils';
 import exp from 'constants'
 
-// Connect to mongoDB
-mongoose.connect(config.mongodb.host, {
-    dbName: config.mongodb.db_name,
-    user: config.mongodb.user,
-    pass: config.mongodb.pass
-});
+import { readKey_openai, readKey_pinecone, readKey } from './keys/keyManager';
+import { pineconeDB } from './src/utils';
+import { langchain } from './src/utils';
 
-// Initialize http server.
-const app = express();
-/**
- * Apply body parser  at middleware
- * 
- * After express 4.16+ version, body-parser is no longer needed.
- */
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.text({ type: 'text/html'}));
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    optionsSuccessStatus: 200
+async function start_server() {
+    try {
+        await readKey('./keys/openai.json').then((key) => {
+            console.log('openai key:', key);
+            langchain.init_langchain(key);
+        })
+        .catch((error) => {
+            console.error('error:', error);
+            throw new Error('openai key is empty');
+        });
+        
+        await readKey('./keys/pinecone.json').then((key) => {
+            console.log('pinecone key:', key);
+            pineconeDB.init_pinecone(key);
+        })
+        .catch((error) => {
+            console.error('error:', error);
+            throw new Error('pinecone key is empty');
+        });
+        
+        // Connect to mongoDB
+        await mongoose.connect(config.mongodb.host, {
+            dbName: config.mongodb.db_name,
+            user: config.mongodb.user,
+            pass: config.mongodb.pass
+        })
+        .catch((error) => {
+            console.error('error:', error);
+            throw new Error('mongoDB connection failed');
+        });
+
+        // Initialize http server.
+        const app = express();
+        /**
+         * Apply body parser  at middleware
+         * 
+         * After express 4.16+ version, body-parser is no longer needed.
+         */
+        app.use(express.json({ limit: '5mb' }));
+        app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+        app.use(express.text({ type: 'text/html'}));
+        const corsOptions = {
+            origin: 'http://localhost:3000',
+            optionsSuccessStatus: 200
+        }
+        app.use(cors(corsOptions));
+        // Serve static files from the parent directory of the current script.
+        // This makes files like images, CSS, and JavaScript accessible via HTTP.
+        // app.use(express.static(path.resolve(__dirname, '..')));
+        app.all('/v1/auth/*', middlewares.validateRequest);
+        app.use(routes);
+
+        const server = http.createServer(app);
+
+        // Listen http server.
+        server.listen(config.port, () => {
+            utils.logger.info(
+                `${config.servicename} API server is running on port ` + config.port
+            );
+        })
+        .on('error', err => utils.logger.error(err)); 
+    } catch (error) {
+        console.error('error:', error);
+        return
+    }
+
 }
-app.use(cors(corsOptions));
-// Serve static files from the parent directory of the current script.
-// This makes files like images, CSS, and JavaScript accessible via HTTP.
-// app.use(express.static(path.resolve(__dirname, '..')));
-app.all('/v1/auth/*', middlewares.validateRequest);
-app.use(routes);
 
-const server = http.createServer(app);
+start_server();
 
-// Listen http server.
-server.listen(config.port, () => {
-    utils.logger.info(
-        `${config.servicename} API server is running on port ` + config.port
-    );
-})
-.on('error', err => utils.logger.error(err));
+// readKey('./keys/openai.json').then((key) => {
+//     console.log('key:', key);
+//     process.env.OPENAI_API_KEY = key;
+// })
+
+// readKey('./keys/pinecone.json').then((key) => {
+//     console.log('key:', key);
+//     process.env.PINECONE = key;
+// })
+
+// // Connect to mongoDB
+// mongoose.connect(config.mongodb.host, {
+//     dbName: config.mongodb.db_name,
+//     user: config.mongodb.user,
+//     pass: config.mongodb.pass
+// });
+
+// // Initialize http server.
+// const app = express();
+// /**
+//  * Apply body parser  at middleware
+//  * 
+//  * After express 4.16+ version, body-parser is no longer needed.
+//  */
+// app.use(express.json({ limit: '5mb' }));
+// app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// app.use(express.text({ type: 'text/html'}));
+// const corsOptions = {
+//     origin: 'http://localhost:3000',
+//     optionsSuccessStatus: 200
+// }
+// app.use(cors(corsOptions));
+// // Serve static files from the parent directory of the current script.
+// // This makes files like images, CSS, and JavaScript accessible via HTTP.
+// // app.use(express.static(path.resolve(__dirname, '..')));
+// app.all('/v1/auth/*', middlewares.validateRequest);
+// app.use(routes);
+
+// const server = http.createServer(app);
+
+// // Listen http server.
+// server.listen(config.port, () => {
+//     utils.logger.info(
+//         `${config.servicename} API server is running on port ` + config.port
+//     );
+// })
+// .on('error', err => utils.logger.error(err)); 

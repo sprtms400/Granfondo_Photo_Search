@@ -1,0 +1,12 @@
+{
+    "oAuth": {
+        "type": "OAuth2",
+        "user": "",
+        "clientId": "",
+        "clientSecret": "",
+        "refreshToken": ""
+    },
+    "options": {
+        "from": ""
+    }
+}

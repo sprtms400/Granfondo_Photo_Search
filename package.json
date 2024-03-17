@@ -24,6 +24,7 @@
   "homepage": "https://github.com/sprtms400/Granfondo_Photo_Search#readme",
   "dependencies": {
     "@langchain/openai": "^0.0.20",
+    "@pinecone-database/pinecone": "^2.1.0",
     "@types/node": "^20.11.16",
     "amqplib": "^0.10.3",
     "async": "^3.2.5",

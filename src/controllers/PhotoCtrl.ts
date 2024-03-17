@@ -3,6 +3,7 @@ import oRest = require('../utils/restware');
 import oPhotoManager = require('../managers/PhotoManager');
 import { access } from 'fs';
 import { IAppearance } from '../models/Photo';
+import { ParsedQs } from 'qs';
 /**
  * @method POST
  * @param req 
@@ -214,6 +215,25 @@ export const getPhoto = function (req: e.Request, res: e.Response) {
      });
 }
 
+export const updatePhoto = function (req: e.Request, res: e.Response) {
+     const photoId = req.params.photoId;
+     const new_data = req.body;
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     if(!new_data) {
+          return oRest.sendError(res, 24, 'new_data is required', 400, 'new_data is required');
+     }
+     oPhotoManager.updatePhoto(photoId, new_data, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
 export const updateAppearance = function (req: e.Request, res: e.Response) {
      const photoId = req.params.photoId;
      const appearance = req.body.appearance;
@@ -291,12 +311,73 @@ export const checkAppearanceAnalyzed = function (req: e.Request, res: e.Response
      });
 }
 
+/**
+ * 
+ * @param req.body {
+ *   "sex": male,
+ *   "helmet": "black",
+ *   "eyewear": null,
+ *   "upper": "red",
+ *   "lower": null,
+ *   "socks": null,
+ *   "shoes": null,
+ *   "bicycle": null
+ * 
+ * }
+ * @param res 
+ * @returns 
+ */
 export const searchPhoto = function (req: e.Request, res: e.Response) {
+     const sex = req.body.sex ? req.body.sex : '';
+     const helmet = req.body.helmet ? req.body.helmet : '';
+     const eyewear = req.body.eyewear ? req.body.eyewear : '';
+     const upper = req.body.upper ? req.body.upper : '';
+     const lower = req.body.lower ? req.body.lower : '';
+     const socks = req.body.socks ? req.body.socks : '';
+     const shoes = req.body.shoes ? req.body.shoes : '';
+     const bicycle = req.body.bicycle ? req.body.bicycle : '';
+     
+     if(typeof sex !== 'string') {
+          return oRest.sendError(res, 24, 'sex must be string', 400, 'sex is must be string');
+     }
+     if(typeof helmet !== 'string') {
+          return oRest.sendError(res, 24, 'helmet must be string', 400, 'helmet must be string');
+     }
+     if(typeof eyewear !== 'string') { 
+          return oRest.sendError(res, 24, 'eyewear must be string', 400, 'eyewear must be string');
+     }
+     if(typeof upper !== 'string') {
+          return oRest.sendError(res, 24, 'upper must be string', 400, 'upper must be string');
+     }
+     if(typeof lower !== 'string') {
+          return oRest.sendError(res, 24, 'lower must be string', 400, 'lower must be string');
+     }
+     if(typeof socks !== 'string') {
+          return oRest.sendError(res, 24, 'socks must be string', 400, 'socks must be string');
+     }
+     if(typeof shoes !== 'string') {
+          return oRest.sendError(res, 24, 'shoes must be string', 400, 'shoes must be string');
+     }
+     if(typeof bicycle !== 'string') {
+          return oRest.sendError(res, 24, 'bicycle must be string', 400, 'bicycle must be string');
+     }
+     oPhotoManager.searchPhoto(sex, helmet, eyewear, upper, lower, socks, shoes, bicycle, function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     })
+
+}
+
+export const parsing_full_text = function (req: e.Request, res: e.Response) {
      const query = req.body.query;
      if(!query) {
           return oRest.sendError(res, 24, 'query is required', 400, 'query is required');
      }
-     oPhotoManager.searchPhoto(query, function (errorCode, shortMessage, httpCode, description, photos) {
+     oPhotoManager.parsing_full_text(query, function (errorCode, shortMessage, httpCode, description, photos) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
@@ -304,4 +385,108 @@ export const searchPhoto = function (req: e.Request, res: e.Response) {
                return oRest.sendSuccess(res, photos, httpCode);
           }
      });
+}
+
+export const colorText_to_RGBcode = function (req: e.Request, res: e.Response) {
+     const colorText = req.body.colorText;
+     if(!colorText) {
+          return oRest.sendError(res, 24, 'colorText is required', 400, 'colorText is required');
+     }
+     oPhotoManager.colorText_to_RGBcode(colorText, function (errorCode, shortMessage, httpCode, description, color) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (color) {
+               return oRest.sendSuccess(res, color, httpCode);
+          }
+     });
+}
+
+export const colorText_to_CIELAB = function (req: e.Request, res: e.Response) {
+     const colorText = req.body.colorText;
+     if(!colorText) {
+          return oRest.sendError(res, 24, 'colorText is required', 400, 'colorText is required');
+     }
+     oPhotoManager.colorText_to_CIELAB(colorText, function (errorCode, shortMessage, httpCode, description, color) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (color) {
+               return oRest.sendSuccess(res, color, httpCode);
+          }
+     });
+}
+
+export const uploadDescription = function (req: e.Request, res: e.Response) {
+     const photoId = req.params.photoId;
+     const appearDescription = req.body.appearDescription;
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     if(!appearDescription) {
+          return oRest.sendError(res, 24, 'appearDescriptionis required', 400, 'appearDescription is required');
+     }
+     console.log('photoId', photoId)
+     console.log('appearDescription', appearDescription)
+     oPhotoManager.uploadDescription(photoId, appearDescription, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
+export const uploadDescriptions = function (req: e.Request, res: e.Response) {
+     const appearDescriptions = req.body.appearDescriptions;
+     if (!appearDescriptions) {
+          return oRest.sendError(res, 24, 'appearDescriptions is required', 400, 'appearDescriptions is required');
+     }
+     oPhotoManager.uploadDescriptions(appearDescriptions, function (errorCode, shortMessage, httpCode, description, photos) {
+          if (errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
+export const vectorSearch = function (req: e.Request, res: e.Response) {
+     const natural_query: any = req.query.natural_query ? req.query.natural_query : '';
+     console.log('natural_query', natural_query)
+     if(!natural_query) {
+          return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
+     }
+     oPhotoManager.vectorSearch(natural_query, function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
+export const aggregateColorByField = function (req: e.Request, res: e.Response) {
+     console.log('req.params', req.params)
+     console.log('req.query', req.query)
+     const field: any = req.query.field;
+     if(!field) {
+          return oRest.sendError(res, 24, 'field is required', 400, 'field is required');
+     }
+     console.log('field', field)
+     oPhotoManager.aggregateColorByField(field, function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
+export const numberSearch = function (req: e.Request, res: e.Response) {
+     const number_query: any = req.query.number_query ? req.query.number_query : '';
 }

@@ -1,4 +1,4 @@
 # Modules
 /node_modules
 # Sensitive informations
-/keys/*
+/keys/key_backups/*

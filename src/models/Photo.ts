@@ -5,6 +5,7 @@ import { upload } from '@google-cloud/storage/build/cjs/src/resumable-upload';
  * Define interface for user appearance for inteligence analysis
  */
 interface IAppearance {
+    description: string,
     sex: string,
     helmet: {
         isWearing: boolean,
@@ -158,6 +159,11 @@ const PhotoSchema = new Schema({
         required: true,
     },
     appearance: {
+        description: {
+            type: String,
+            default: 'unknown', // default value is 'unknown
+            required: true,
+        },
         sex: {
             type: String,
             enum: ['male', 'fenmale', 'unknown'],
@@ -301,7 +307,7 @@ const PhotoSchema = new Schema({
                 default: 'unknown', // default value is 'unknown
                 required: true,
             }
-        },
+        }
     },
     numberPlate: [
         {

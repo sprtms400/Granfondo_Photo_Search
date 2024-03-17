@@ -1,4 +1,6 @@
 import logger from './logger';
+import * as langchain from './langchain';
+import * as pineconeDB from './pineconeDB';
 // import loggerWinston from './loggerWinston';
 // import * as metadata from './metadata';
 // import * as enumType from './enumType';
@@ -8,6 +10,8 @@ import logger from './logger';
 
 export {
     logger,
+    langchain,
+    pineconeDB,
     // loggerWinston,
     // metadata,
     // enumType,

@@ -36,6 +36,9 @@ router.get('/photos', oPhotoCtrl.getPhotos);
 // Get photo Information by photoId
 router.get('/photo/:photoId', oPhotoCtrl.getPhoto);
 
+// update photo information by photoId
+router.patch('/photo/:photoId', oPhotoCtrl.updatePhoto);
+
 // Update analysis result of photo about appearance
 router.post('/photo/:photoId/appearance', oPhotoCtrl.updateAppearance);
 // Update analysis result of photo about number plate
@@ -44,6 +47,16 @@ router.post('/photo/:photoId/numberPlate', oPhotoCtrl.updateNumberPlate);
 router.patch('/photo/:photoId/checkNumberPlateAnalyzed', oPhotoCtrl.checkNumberPlateAnalyzed);
 router.patch('/photo/:photoId/checkAppearanceAnalyzed', oPhotoCtrl.checkAppearanceAnalyzed);
 
-router.post('/photo/search', oPhotoCtrl.searchPhoto);
+// router.post('/photo/search', oPhotoCtrl.searchPhoto);
+router.post('/photo/parsing_full_text', oPhotoCtrl.parsing_full_text);
+router.post('/photo/colorText_to_RGBcode', oPhotoCtrl.colorText_to_RGBcode);
+router.post('/photo/colorText_to_CIELAB', oPhotoCtrl.colorText_to_CIELAB);
 
+router.post('/photo/searchPhoto', oPhotoCtrl.searchPhoto);
+router.post('/photo/:photoId/uploadDescription', oPhotoCtrl.uploadDescription);
+router.post('/photo/uploadDescriptions', oPhotoCtrl.uploadDescriptions);
+
+router.get('/photo/search/vector', oPhotoCtrl.vectorSearch);
+router.get('/photo/search/number_plate', oPhotoCtrl.numberSearch);
+router.get('/photo/aggregate/color_by_field', oPhotoCtrl.aggregateColorByField);
 export default router;

@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import { Storage } from '@google-cloud/storage';
 import { IPhoto, INumberPlate, Photo as oPhoto, IAppearance } from '../models/Photo';
 import config from '../config';
+import { langchain, pineconeDB } from '../utils';
 import { gStorage, rabbitmq } from '../services';
 
 const makeMetaData = function (userId: string, photoId: string, srcLink: string, competition: string, author: string, photographedTime: string, width: number|null, height: number|null, fileSize: number|null, fileType: string,
@@ -377,6 +378,7 @@ export const getPhotos = function (
             if(!photos) {
                 return callback(24, 'photo_not_found', 404, 'Photo not found', []);
             }
+            console.log('photos', photos)
             return callback(null, null, 200, null, photos);
         })
         .catch((error: Error) => {
@@ -387,11 +389,184 @@ export const getPhotos = function (
     }
 }
 
-export const searchPhoto = function (query: string, 
-        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photos: IPhoto[]|null) => void) {
+export const updatePhoto = function (photoId: string, photo: IPhoto,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
     try {
-    
+        oPhoto.findOneAndUpdate({photoId: photoId}, photo).then((photo: IPhoto|null) => {
+            if(!photo) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', null);
+            }
+            return callback(null, null, 200, null, photo);
+        })
     } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const parsing_full_text = async function (query: string, 
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, result: string|null) => void) {
+    try {
+        const parsed_searchtext = await langchain.llm_parse_query(query)
+        // json 파싱 및 각 항목에 대해 벡터화 
+        return callback(null, null, 200, null, parsed_searchtext);
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const colorText_to_RGBcode = async function (color: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, result: string|null) => void) {
+    try {
+        const RGB_code = await langchain.llm_colorText_to_RGBcode(color)
+        return callback(null, null, 200, null, RGB_code);
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const colorText_to_CIELAB = async function (color: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, result: string|null) => void) {
+    try {
+        const CIELAB_code = await langchain.llm_colorText_to_CIELAB(color)
+        return callback(null, null, 200, null, CIELAB_code);
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const searchPhoto = function (sex: string, eyewear: string, helmet: string, upper: string, lower: string, socks: string, shoes: string, bicycle: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, vectorized_query: []) => void) {
+    try {
+        // pineconeDB.query() c 
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', []);
+    }
+}
+
+export const uploadDescription = async function (photoId: string, appearDescription: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
+    try {
+        // const response = await pineconeDB.upsert(photoId, vector, target_appear, meta_data);
+        // return callback(null, null, 200, null, response);
+        const vectorizedDescription = await langchain.vecterize_words(appearDescription);
+        console.log('vectorizedDescription', vectorizedDescription)
+        pineconeDB.upsert_by_photoId(photoId, vectorizedDescription, 'appearance_description', {});
+        return callback(null, null, 200, null, appearDescription);
+    } catch (error) {
+        console.log('error', error);
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const uploadDescriptions = async function (appearDescriptions: any,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
+    try {
+        console.log('length of appearDescriptions', appearDescriptions.length)
+        const vectorizedDescriptions = [];
+        for (let i = 0; i < appearDescriptions.length; i++) {
+            let vectorizedDescription = await langchain.vecterize_words(appearDescriptions[i].appearDescription);
+            vectorizedDescriptions.push({
+                photoId: appearDescriptions[i].photoId,
+                vectorizedDescription: vectorizedDescription
+            })
+        }
+        pineconeDB.upsert_bulk(vectorizedDescriptions, 'appearance_description');
+    } catch (error) {
+        console.log('error', error);
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const vectorSearch = async function (query: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
+    try {
+        // 검색어 파싱하여 룰 기반 검색어 생성 후 백터화 필요
+        const parsed_query = await langchain.llm_parse_query(query);
+        // {
+        //     sex: null,
+        //     helmet: 'white',
+        //     eyewear: 'black',
+        //     upper: 'red',
+        //     lower: 'black',
+        //     socks: 'white',
+        //     shoes: 'black',
+        //     gloves: null,
+        //     bicycle: 'red'
+        // }
+        console.log('parsed_query', parsed_query)
+        const restructured_query = await langchain.llm_generatre_query(parsed_query);
+        console.log('restructured_query', restructured_query)
+        const vectorizedQuery = await langchain.vecterize_words(restructured_query);
+        const responses = await pineconeDB.query_single_namespace(vectorizedQuery, 'appearance_description');
+        console.log('vectorizedQuery', vectorizedQuery)
+        console.log('responses', responses)
+        return callback(null, null, 200, null, responses);
+    } catch (error) {
+        console.log('error', error);
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+/**
+ * 
+ * @param field "helmet" | "eyewear" | "upper" | "lower" | "socks" | "shoes" | "gloves" | "bicycle"
+ * @returns list of colors
+ */
+export const aggregateColorByField = async function (field: string, 
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
+    try {
+        await oPhoto.distinct('appearance.'+field+'.color').then((colors: string[]| unknown[]) => {
+            console.log('colors of ', field, ' :', colors);
+            return callback(null, null, 200, null, colors);
+        })
+        .catch((error: Error) => {
+            console.log('error', error);
+            return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        });
+    } catch (error) {
+        console.log('error', error);
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+/**
+ * 
+ * @param query 
+ * @param callback 
+ * @returns 
+ * 
+ * 1. 자연어 형태의 검색어를 받는다. ( 예: 하얀색 헬멧, 검은색 고글이랑, 빨간색 저지와 검은색 빕숏 흰색 양말에 검은색 클릿슈즈를 신었고 자전거는 빨간색이야)
+ * 2. 검색어를 파싱하여 각 항목에대해 표현된 json 객체를 생성한다. ( 예: {helmet: 'white', eyewear: 'black', upper: 'red', lower: 'black', socks: 'white', shoes: 'black', gloves: null, bicycle: 'red'})
+ * 3. 각 유효 항목에 대하여 MongoDB에 저장된 유니크한 값들을 가져와서 사전을 만든다 
+ * ( 예: 
+ *      {
+ *          helmet: ['white', 'black', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'brown'],
+ *          eyewear: ['black', 'white'],
+ *          upper: ['white', 'black', 'red', 'orange', 'purple', 'pink', 'gray', 'brown'],
+ *          ....
+ *      }
+ * )
+ * 4. 사전 내의 value 값들을 텍스트 임베딩한다.
+ * 5. 
+ */
+export const vectorSearch_by_color = async function (query: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
+    try {
+        let dictionary: {[key: string]: string} = {};            // DB내의 필드별 유니크값들의 임시사전 검색어 파싱 후 유효한 키값들에 대하여 사전생성..
+        // 검색어 파싱하여 룰 기반 검색어 생성 후 백터화 필요
+        const parsed_query = await langchain.llm_parse_query(query);
+        const keys = Object.keys(parsed_query)
+        let required_keys = [];
+        for (let i = 0; i < keys.length; i++) {
+            if (parsed_query[keys[i]] === null) {
+                continue
+                // delete parsed_query[keys[i]];
+            }
+            required_keys.push(keys[i]);
+        }
+
+    } catch (error) {
+        console.log('error', error);
         return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
     }
 }

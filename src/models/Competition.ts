@@ -14,6 +14,14 @@ const CompetitionSchema = new Schema({
         type: Date,
         required: true,
     },
+    colortTemperature: {
+        type: Number,       // Like 6500k
+        required: false,
+    },
+    weather: {
+        type: String,       // Like Sunny, Cloudy, Rainy
+        required: false,
+    },
     name: {
         type: String,
         required: true,
