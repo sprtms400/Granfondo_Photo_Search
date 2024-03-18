@@ -3,38 +3,33 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 let chatModel: ChatOpenAI<ChatOpenAICallOptions>;
-let openai_key: string = '';
+let embeddings1536: OpenAIEmbeddings;
 export const init_langchain = function (key: string) {
     console.log('init_langchain: ', key)
     chatModel = new ChatOpenAI({
         openAIApiKey: key,
         modelName: "gpt-3.5-turbo",
     })
-    openai_key = key;
+    /**
+     * Langchain Textembedding guidance
+     * Follow link : https://js.langchain.com/docs/integrations/text_embedding/openai
+     */
+    embeddings1536 = new OpenAIEmbeddings({
+        openAIApiKey: key,
+        batchSize: 512,
+        modelName: "text-embedding-ada-002",
+        // dimensions: 1024
+        /**
+         * << pricing policy >>
+         * Follow link : https://openai.com/pricing
+         * text-embedding-3-small	$0.02 / 1M tokens
+         * text-embedding-3-large	$0.13 / 1M tokens
+         * ada v2	                $0.10 / 1M tokens
+         */
+    })
 }
 
 const outputParser = new StringOutputParser();
-
-/**
- * Langchain Textembedding guidance
- * Follow link : https://js.langchain.com/docs/integrations/text_embedding/openai
- */
-
-const embeddings1536 = new OpenAIEmbeddings({
-    // openAIApiKey: 'API-KEY',        // Environment variable 로 찾을것
-    openAIApiKey: openai_key,
-    batchSize: 512,
-    // modelName: "text-embedding-3-small",
-    modelName: "text-embedding-ada-002", // Base dimension is 1536
-    // dimensions: 1024
-    /**
-     * << pricing policy >>
-     * Follow link : https://openai.com/pricing
-     * text-embedding-3-small	$0.02 / 1M tokens
-     * text-embedding-3-large	$0.13 / 1M tokens
-     * ada v2	                $0.10 / 1M tokens
-     */
-})
 
 export const vecterize_words = async function (words: string) {
     try {
