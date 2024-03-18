@@ -371,7 +371,7 @@ export const checkAppearanceAnalyzed = function (photoId: string,
     }
 }
 
-export const getPhotos = function (
+export const getAllPhotos = function (
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photos: IPhoto[]|null) => void) {
     try {
         oPhoto.find({}).then((photos: IPhoto[]|[]) => {
@@ -379,6 +379,23 @@ export const getPhotos = function (
                 return callback(24, 'photo_not_found', 404, 'Photo not found', []);
             }
             console.log('photos', photos)
+            return callback(null, null, 200, null, photos);
+        })
+        .catch((error: Error) => {
+            return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        });
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
+export const getPhotosByIdList = function (photoIdList: string[],
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photos: IPhoto[]|null) => void) {
+    try {
+        oPhoto.find({photoId: {$in: photoIdList}}).then((photos: IPhoto[]|[]) => {
+            if(!photos) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', []);
+            }
             return callback(null, null, 200, null, photos);
         })
         .catch((error: Error) => {
@@ -477,7 +494,7 @@ export const uploadDescriptions = async function (appearDescriptions: any,
     }
 }
 
-export const vectorSearch = async function (query: string,
+export const vectorSearch = async function (query: string, top_k: number,
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
     try {
         // 검색어 파싱하여 룰 기반 검색어 생성 후 백터화 필요
@@ -497,7 +514,7 @@ export const vectorSearch = async function (query: string,
         const restructured_query = await langchain.llm_generatre_query(parsed_query);
         console.log('restructured_query', restructured_query)
         const vectorizedQuery = await langchain.vecterize_words(restructured_query);
-        const responses = await pineconeDB.query_single_namespace(vectorizedQuery, 'appearance_description');
+        const responses = await pineconeDB.query_single_namespace(vectorizedQuery, 'appearance_description', top_k);
         console.log('vectorizedQuery', vectorizedQuery)
         console.log('responses', responses)
         return callback(null, null, 200, null, responses);
@@ -549,22 +566,26 @@ export const aggregateColorByField = async function (field: string,
  * 4. 사전 내의 value 값들을 텍스트 임베딩한다.
  * 5. 
  */
-export const vectorSearch_by_color = async function (query: string,
+export const vectorSearch_by_CIELAB = async function (query: string,
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
     try {
         let dictionary: {[key: string]: string} = {};            // DB내의 필드별 유니크값들의 임시사전 검색어 파싱 후 유효한 키값들에 대하여 사전생성..
         // 검색어 파싱하여 룰 기반 검색어 생성 후 백터화 필요
         const parsed_query = await langchain.llm_parse_query(query);
         const keys = Object.keys(parsed_query)
-        let required_keys = [];
+        console.log('parsed_query', parsed_query)
+        console.log('keys', keys)
         for (let i = 0; i < keys.length; i++) {
-            if (parsed_query[keys[i]] === null) {
+            if (parsed_query[keys[i]] === 'sex' || parsed_query[keys[i]]=== null) {
                 continue
                 // delete parsed_query[keys[i]];
             }
-            required_keys.push(keys[i]);
+            dictionary[keys[i]] = '';
+            await oPhoto.distinct('appearance.'+keys[i]+'.color').then((colors: string[]| unknown[]) => {
+                // dictionary[keys[i]] = colors;
+                console.log('colors of ', keys[i], ' :', colors);
+            })
         }
-
     } catch (error) {
         console.log('error', error);
         return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);

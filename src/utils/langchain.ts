@@ -72,7 +72,7 @@ export const llm_parse_query = async function (query: string) {
             input: query,
         });
         const parsed_response = JSON.parse(JSON.stringify(response));
-        return parsed_response;
+        return JSON.parse(parsed_response);
     } catch (error) {
         console.log('error: ', error)
         return {}

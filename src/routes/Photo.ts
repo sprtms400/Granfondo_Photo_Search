@@ -30,11 +30,12 @@ router.post('/photo/uploadSuccess/:photoId', oPhotoCtrl.uploadSuccess);
 // upload image through server, apply multer as middleware
 router.post('/photo/upload', oMiddlewares.multerUploadOnMemory.single('file'), oPhotoCtrl.upload);
 
-// Get all photos
+// Get all photos or multiple photos by id List
 router.get('/photos', oPhotoCtrl.getPhotos);
 
 // Get photo Information by photoId
 router.get('/photo/:photoId', oPhotoCtrl.getPhoto);
+
 
 // update photo information by photoId
 router.patch('/photo/:photoId', oPhotoCtrl.updatePhoto);
@@ -59,4 +60,5 @@ router.post('/photo/uploadDescriptions', oPhotoCtrl.uploadDescriptions);
 router.get('/photo/search/vector', oPhotoCtrl.vectorSearch);
 router.get('/photo/search/number_plate', oPhotoCtrl.numberSearch);
 router.get('/photo/aggregate/color_by_field', oPhotoCtrl.aggregateColorByField);
+router.get('/photo/search/vectorSearch_by_CIELAB', oPhotoCtrl.vectorSearch_by_CIELAB);
 export default router;

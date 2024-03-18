@@ -58,8 +58,10 @@ async function start_server() {
         app.use(express.json({ limit: '5mb' }));
         app.use(express.urlencoded({ extended: true, limit: '50mb' }));
         app.use(express.text({ type: 'text/html'}));
+
+        // CORS setting
         const corsOptions = {
-            origin: 'http://localhost:3000',
+            origin: ['http://localhost:3000', 'http://localhost:8080'],
             optionsSuccessStatus: 200
         }
         app.use(cors(corsOptions));

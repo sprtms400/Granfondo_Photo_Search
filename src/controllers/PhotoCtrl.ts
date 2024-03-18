@@ -186,14 +186,26 @@ export const upload = function (req: e.Request, res: e.Response) {
 }
 
 export const getPhotos = function (req: e.Request, res: e.Response) {
-     oPhotoManager.getPhotos(function (errorCode, shortMessage, httpCode, description, photos) {
-          if(errorCode) {
-               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
-          }
-          if (photos) {
-               return oRest.sendSuccess(res, photos, httpCode);
-          }
-     });
+     const photoIdList:string[] | [] =  req.query.photoIdList ? JSON.parse(JSON.stringify(req.query.photoIdList)) : [];
+     if (photoIdList.length == 0) {
+          oPhotoManager.getAllPhotos(function (errorCode, shortMessage, httpCode, description, photos) {
+               if(errorCode) {
+                    return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+               }
+               if (photos) {
+                    return oRest.sendSuccess(res, photos, httpCode);
+               }
+          });
+     } else {
+          oPhotoManager.getPhotosByIdList(photoIdList, function (errorCode, shortMessage, httpCode, description, photos) {
+               if(errorCode) {
+                    return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+               }
+               if (photos) {
+                    return oRest.sendSuccess(res, photos, httpCode);
+               }
+          });
+     }
 }
 
 export const getPhoto = function (req: e.Request, res: e.Response) {
@@ -455,11 +467,12 @@ export const uploadDescriptions = function (req: e.Request, res: e.Response) {
 
 export const vectorSearch = function (req: e.Request, res: e.Response) {
      const natural_query: any = req.query.natural_query ? req.query.natural_query : '';
+     const top_k: any = req.query.top_k ? req.query.top_k : 10;
      console.log('natural_query', natural_query)
      if(!natural_query) {
           return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
      }
-     oPhotoManager.vectorSearch(natural_query, function (errorCode, shortMessage, httpCode, description, photos) {
+     oPhotoManager.vectorSearch(natural_query, top_k, function (errorCode, shortMessage, httpCode, description, photos) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
@@ -478,6 +491,21 @@ export const aggregateColorByField = function (req: e.Request, res: e.Response) 
      }
      console.log('field', field)
      oPhotoManager.aggregateColorByField(field, function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
+export const vectorSearch_by_CIELAB = function (req: e.Request, res: e.Response) {
+     const natural_query: any = req.query.natural_query ? req.query.natural_query : '';
+     if(!natural_query) {
+          return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
+     }
+     oPhotoManager.vectorSearch_by_CIELAB(natural_query, function (errorCode, shortMessage, httpCode, description, photos) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }

@@ -47,11 +47,11 @@ export const upsert_bulk = async function (bulks: any, target_appear: string) {
     return response
 }
 
-export const query_single_namespace = async function (vector_value: number[], target_appear: string) {
+export const query_single_namespace = async function (vector_value: number[], target_appear: string, top_k: number = 10) {
     const namespace_name = target_appear + "_namespace";
     const ns1 = index.namespace(namespace_name);
     const response = await ns1.query({
-        topK: 10,
+        topK: top_k,
         vector: vector_value,
     });
     console.log(response)
