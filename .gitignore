@@ -2,3 +2,4 @@
 /node_modules
 # Sensitive informations
 /keys/key_backups/*
+/keys/*

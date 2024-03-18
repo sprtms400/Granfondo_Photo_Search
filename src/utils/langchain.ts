@@ -3,13 +3,14 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 let chatModel: ChatOpenAI<ChatOpenAICallOptions>;
-
+let openai_key: string = '';
 export const init_langchain = function (key: string) {
     console.log('init_langchain: ', key)
     chatModel = new ChatOpenAI({
         openAIApiKey: key,
         modelName: "gpt-3.5-turbo",
     })
+    openai_key = key;
 }
 
 const outputParser = new StringOutputParser();
@@ -21,7 +22,7 @@ const outputParser = new StringOutputParser();
 
 const embeddings1536 = new OpenAIEmbeddings({
     // openAIApiKey: 'API-KEY',        // Environment variable 로 찾을것
-    openAIApiKey: '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',
+    openAIApiKey: openai_key,
     batchSize: 512,
     // modelName: "text-embedding-3-small",
     modelName: "text-embedding-ada-002", // Base dimension is 1536
