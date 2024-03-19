@@ -1,6 +1,8 @@
 # Modules
 /node_modules
 # Sensitive informations
+.env
 /keys/*
+
 # Buildied File
 /dist

@@ -591,3 +591,17 @@ export const vectorSearch_by_CIELAB = async function (query: string,
         return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
     }
 }
+
+export const numberSearch_by_text = async function (number: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
+    try {
+        oPhoto.findOne({"numberPlate": {"$elemMatch": {"numberPlate": number}}}).then((photo: IPhoto|null) => {
+
+        })
+        .catch((error) => {
+            
+        })
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occured for an unknown reason. Please contact the administrator.', null);
+    }
+}

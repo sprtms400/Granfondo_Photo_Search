@@ -227,6 +227,13 @@ export const getPhoto = function (req: e.Request, res: e.Response) {
      });
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns return single document of photo
+ * 
+ */
 export const updatePhoto = function (req: e.Request, res: e.Response) {
      const photoId = req.params.photoId;
      const new_data = req.body;
@@ -246,6 +253,14 @@ export const updatePhoto = function (req: e.Request, res: e.Response) {
      });
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns single document of photo
+ * 
+ *  Update appearance field of photo
+ */
 export const updateAppearance = function (req: e.Request, res: e.Response) {
      const photoId = req.params.photoId;
      const appearance = req.body.appearance;
@@ -483,8 +498,6 @@ export const vectorSearch = function (req: e.Request, res: e.Response) {
 }
 
 export const aggregateColorByField = function (req: e.Request, res: e.Response) {
-     console.log('req.params', req.params)
-     console.log('req.query', req.query)
      const field: any = req.query.field;
      if(!field) {
           return oRest.sendError(res, 24, 'field is required', 400, 'field is required');
@@ -500,13 +513,35 @@ export const aggregateColorByField = function (req: e.Request, res: e.Response) 
      });
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns List of photos
+ * 
+ * Search photos with natural search query,
+ * After getting natural search query from server, Server will parse natural search query as a structured query like...
+ *   {
+ *         "sex": "male",
+ *         "helmet": "red",
+ *         "eyeware": "black",
+ *         "upper": "green",
+ *         "lower": "white",
+ *         "socks": "gray",
+ *         "shoes": "silver",
+ *         "bicycle": "red"
+ *    }
+ * 
+ *   And server find CIELAB code from Color collection (refer models/Color.ts) if not, ask LLMs.
+ *   From this ranking results using euclidian algorithms on space.
+ */
 export const vectorSearch_by_CIELAB = function (req: e.Request, res: e.Response) {
      const natural_query: any = req.query.natural_query ? req.query.natural_query : '';
      if(!natural_query) {
           return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
      }
      oPhotoManager.vectorSearch_by_CIELAB(natural_query, function (errorCode, shortMessage, httpCode, description, photos) {
-          if(errorCode) {
+          if (errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
           if (photos) {
@@ -515,6 +550,17 @@ export const vectorSearch_by_CIELAB = function (req: e.Request, res: e.Response)
      });
 }
 
-export const numberSearch = function (req: e.Request, res: e.Response) {
-     const number_query: any = req.query.number_query ? req.query.number_query : '';
+export const numberSearch_by_text = function (req: e.Request, res: e.Response) {
+     const number: any = req.query.number ? req.query.number : '';
+     if(!number) {
+          return oRest.sendError(res, 24, 'number is required', 400, 'number is required');
+     }
+     oPhotoManager.numberSearch_by_text(number, function (errorCode, shortMessage, httpCode, description, photo) {
+          if (errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     })
 }
