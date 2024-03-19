@@ -4,29 +4,34 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 
 let chatModel: ChatOpenAI<ChatOpenAICallOptions>;
 let embeddings1536: OpenAIEmbeddings;
-export const init_langchain = function (key: string) {
+export const init_langchain = function (key: string | undefined) {
     console.log('init_langchain: ', key)
-    chatModel = new ChatOpenAI({
-        openAIApiKey: key,
-        modelName: "gpt-3.5-turbo",
-    })
-    /**
-     * Langchain Textembedding guidance
-     * Follow link : https://js.langchain.com/docs/integrations/text_embedding/openai
-     */
-    embeddings1536 = new OpenAIEmbeddings({
-        openAIApiKey: key,
-        batchSize: 512,
-        modelName: "text-embedding-ada-002",
-        // dimensions: 1024
+
+    if (typeof key == 'undefined') {
+        throw new Error("OpenAI API Key is undefined") 
+    } else if (typeof key == 'string') {
+        chatModel = new ChatOpenAI({
+            openAIApiKey: key,
+            modelName: "gpt-3.5-turbo",
+        })
         /**
-         * << pricing policy >>
-         * Follow link : https://openai.com/pricing
-         * text-embedding-3-small	$0.02 / 1M tokens
-         * text-embedding-3-large	$0.13 / 1M tokens
-         * ada v2	                $0.10 / 1M tokens
+         * Langchain Textembedding guidance
+         * Follow link : https://js.langchain.com/docs/integrations/text_embedding/openai
          */
-    })
+        embeddings1536 = new OpenAIEmbeddings({
+            openAIApiKey: key,
+            batchSize: 512,
+            modelName: "text-embedding-ada-002",
+            // dimensions: 1024
+            /**
+             * << pricing policy >>
+             * Follow link : https://openai.com/pricing
+             * text-embedding-3-small	$0.02 / 1M tokens
+             * text-embedding-3-large	$0.13 / 1M tokens
+             * ada v2	                $0.10 / 1M tokens
+             */
+        })
+    }
 }
 
 const outputParser = new StringOutputParser();

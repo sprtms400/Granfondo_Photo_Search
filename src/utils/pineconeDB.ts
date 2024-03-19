@@ -4,11 +4,15 @@ import { Pinecone, RecordMetadata } from '@pinecone-database/pinecone'
 let pc: Pinecone;
 let index: Index<RecordMetadata>
 
-export const init_pinecone = function (key: string) {
-    pc = new Pinecone({
-        apiKey: key,
-    })
-    index = pc.index("photosearch")
+export const init_pinecone = function (key: string | undefined) {
+    if (typeof key == 'undefined') {
+       throw new Error("Pinecone API Key is undefined") 
+    } else if (typeof key == 'string') {
+        pc = new Pinecone({
+            apiKey: key,
+        })
+        index = pc.index("photosearch")
+    }
 }
 
 /**
