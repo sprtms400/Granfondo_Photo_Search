@@ -484,6 +484,8 @@ export const vectorSearch = function (req: e.Request, res: e.Response) {
      const natural_query: any = req.query.natural_query ? req.query.natural_query : '';
      const top_k: any = req.query.top_k ? req.query.top_k : 10;
      console.log('natural_query', natural_query)
+     console.log('req.query', req.query)
+     console.log('top_k', top_k)
      if(!natural_query) {
           return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
      }
@@ -493,6 +495,21 @@ export const vectorSearch = function (req: e.Request, res: e.Response) {
           }
           if (photos) {
                return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
+export const numberSearch = function (req: e.Request, res: e.Response) {
+     const number: any = req.query.number ? req.query.number : '';
+     if(!number) {
+          return oRest.sendError(res, 24, 'number is required', 400, 'number is required');
+     }
+     oPhotoManager.numberSearch(number, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
           }
      });
 }

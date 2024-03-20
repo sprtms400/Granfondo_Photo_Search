@@ -1,0 +1,10 @@
+{
+    "name": "gfps-api",
+    "version": "0.0.1",
+    "description": "Granfondo photo semantic search API",
+    "license": "MIT",
+    "author": "Park Jong Hyeon",
+    "script": {
+        "start": "node server.js"
+    }
+}

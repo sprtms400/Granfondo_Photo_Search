@@ -524,6 +524,23 @@ export const vectorSearch = async function (query: string, top_k: number,
     }
 }
 
+export const numberSearch = function (number: string,
+        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photo: IPhoto|null) => void) {
+    try {
+        oPhoto.findOne({"numberPlate": {"$elemMatch": {"numberPlate": number}}}).then((photo: IPhoto|null) => {
+            if(!photo) {
+                return callback(24, 'photo_not_found', 404, 'Photo not found', null);
+            }
+            return callback(null, null, 200, null, photo);
+        })
+        .catch((error) => {
+            return callback(24, 'find_photo_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
+        });
+    } catch (error) {
+        return callback(24, 'function_fail', 500, 'An error occured for an unknown reason. Please contact the administrator.', null);
+    }
+}
+
 /**
  * 
  * @param field "helmet" | "eyewear" | "upper" | "lower" | "socks" | "shoes" | "gloves" | "bicycle"

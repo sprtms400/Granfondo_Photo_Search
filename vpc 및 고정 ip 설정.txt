@@ -1,0 +1,66 @@
+1. vpc 네트워크 생성 // https://cloud.google.com/vpc/docs/create-modify-vpc-networks?hl=ko
+ㄴ  gcloud compute networks create NETWORK \
+    --subnet-mode=custom \
+    --bgp-routing-mode=DYNAMIC_ROUTING_MODE \
+    --mtu=MTU
+
+ㄴㄴ     gcloud compute networks create gfps-network \
+        --subnet-mode=custom \
+        --bgp-routing-mode=regional \
+        --mtu=1460
+
+
+2. 앱엔진을 위한 vpc 서브넷 생성 //https://cloud.google.com/appengine/docs/legacy/standard/python/outbound-ip-addresses?hl=ko
+ㄴ gcloud compute networks subnets create SUBNET_NAME \
+    --range=RANGE \
+    --network=NETWORK_NAME \
+    --region=REGION
+
+ㄴㄴ    gcloud compute networks subnets create gfps-subnet \ 
+        --range=10.0.0.0/8 \
+        --network=gfps-network \
+        --region=asia-northeast3
+
+3. App engine 서비스를 서브넷에 연결    //https://cloud.google.com/appengine/docs/legacy/standard/python/connecting-vpc?hl=ko
+ㄴ  gcloud compute networks vpc-access connectors create CONNECTOR_NAME \
+    --region REGION \
+    --subnet SUBNET \
+    # If you are not using Shared VPC, omit the following line.
+    --subnet-project HOST_PROJECT_ID \
+    # Optional: specify minimum and maximum instance values between 2 and
+    10, default is 2 min, 10 max.
+    --min-instances MIN \
+    --max-instances MAX \
+    # Optional: specify machine type, default is e2-micro
+    --machine-type MACHINE_TYPE
+
+ㄴㄴ    
+
+4. Cloud Router 생성
+ㄴ gcloud compute routers create ROUTER_NAME \
+    --network=NETWORK_NAME \
+    --region=REGION
+
+ㄴㄴ  gcloud compute routers create gfps-router \
+     --network=gfps-network \
+     --region=asia-northeast3
+
+4. 고정 IP 예약
+ㄴ gcloud compute addresses create ORIGIN_IP_NAME \
+    --region=REGION
+
+ㄴㄴ  gcloud compute addresses create gfps-ip \
+      --region=asia-northeast3
+
+5. Cloud NAT 게이트웨이 생성 후 IP 주소 지정
+ㄴ gcloud compute routers nats create NAT_NAME \
+    --router=ROUTER_NAME \
+    --region=REGION \
+    --nat-custom-subnet-ip-ranges=SUBNET_NAME \
+    --nat-external-ip-pool=ORIGIN_IP_NAME
+
+ㄴㄴ  gcloud compute routers nats create gfps-nat \
+    --router=gfps-router \
+    --region=asia-northeast3 \
+    --nat-custom-subnet-ip-ranges=gfps-subnet \
+    --nat-external-ip-pool=gfps-ip

@@ -55,7 +55,7 @@ export const query_single_namespace = async function (vector_value: number[], ta
     const namespace_name = target_appear + "_namespace";
     const ns1 = index.namespace(namespace_name);
     const response = await ns1.query({
-        topK: top_k,
+        topK: Number(top_k),
         vector: vector_value,
     });
     console.log(response)

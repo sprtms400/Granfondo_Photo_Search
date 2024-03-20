@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'         // Get env variables using dotenv package
-dotenv.config()
-const openai_api_key: string | undefined = process.env.OPENAI_API_KEY;
-const pinecone_api_key: string | undefined = process.env.PINECONE_API_KEY;
+// dotenv.config()
+// const openai_api_key: string | undefined = process.env.OPENAI_API_KEY;
+// const pinecone_api_key: string | undefined = process.env.PINECONE_API_KEY;
 
 import path from 'path'
 import * as fs from 'fs'
@@ -24,25 +24,27 @@ import { langchain } from './src/utils';
 
 async function start_server() {
     try {
-        // await readKey('./keys/openai.json').then((key) => {
-        //     console.log('openai key:', key);
-        //     langchain.init_langchain(key);
-        // })
-        // .catch((error) => {
-        //     console.error('error:', error);
-        //     throw new Error('openai key is empty');
-        // });
+        await readKey('./keys/openai.json').then((key) => {
+            console.log('openai key:', key);
+            langchain.init_langchain(key);
+        })
+        .catch((error) => {
+            console.error('error:', error);
+            throw new Error('openai key is empty');
+        });
         
-        // await readKey('./keys/pinecone.json').then((key) => {
-        //     console.log('pinecone key:', key);
-        //     pineconeDB.init_pinecone(key);
-        // })
-        // .catch((error) => {
-        //     console.error('error:', error);
-        //     throw new Error('pinecone key is empty');
-        // });
-        langchain.init_langchain(openai_api_key)
-        pineconeDB.init_pinecone(pinecone_api_key)
+        await readKey('./keys/pinecone.json').then((key) => {
+            console.log('pinecone key:', key);
+            pineconeDB.init_pinecone(key);
+        })
+        .catch((error) => {
+            console.error('error:', error);
+            throw new Error('pinecone key is empty');
+        });
+
+        // dotenv key management
+        // langchain.init_langchain(openai_api_key)
+        // pineconeDB.init_pinecone(pinecone_api_key)
         
         // Connect to mongoDB
         await mongoose.connect(config.mongodb.host, {

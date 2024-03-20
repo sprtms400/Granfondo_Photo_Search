@@ -3,7 +3,9 @@ import ts from 'gulp-typescript' // Typescript 코드에 gulp를 이용하기위
 import { deleteAsync } from 'del'
 
 const tsProject = ts.createProject('tsconfig.json')
-
+const tsConfig = tsProject.config;
+const OUT_PATH = tsConfig.compilerOptions.outDir as string;
+const TRANSPILE_PATH = tsConfig.include || "./src/**/*.ts";
 
 gulp.task('bulid-src', () => {
     const tsProject = ts.createProject('./tscondig.json')
