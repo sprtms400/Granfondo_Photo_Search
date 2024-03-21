@@ -378,7 +378,7 @@ export const getAllPhotos = function (
             if(!photos) {
                 return callback(24, 'photo_not_found', 404, 'Photo not found', []);
             }
-            console.log('photos', photos)
+            console.log('len of photos', photos.length)
             return callback(null, null, 200, null, photos);
         })
         .catch((error: Error) => {
@@ -389,13 +389,14 @@ export const getAllPhotos = function (
     }
 }
 
-export const getPhotosByIdList = function (photoIdList: string[],
+export const getPhotosByIdList = async function (photoIdList: string[],
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, photos: IPhoto[]|null) => void) {
     try {
-        oPhoto.find({photoId: {$in: photoIdList}}).then((photos: IPhoto[]|[]) => {
+        await oPhoto.find({photoId:{$in:photoIdList}}).then((photos: IPhoto[]|[]) => {
             if(!photos) {
                 return callback(24, 'photo_not_found', 404, 'Photo not found', []);
             }
+            console.log('result photos : ', photos)
             return callback(null, null, 200, null, photos);
         })
         .catch((error: Error) => {

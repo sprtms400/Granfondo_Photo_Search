@@ -186,7 +186,9 @@ export const upload = function (req: e.Request, res: e.Response) {
 }
 
 export const getPhotos = function (req: e.Request, res: e.Response) {
-     const photoIdList:string[] | [] =  req.query.photoIdList ? JSON.parse(JSON.stringify(req.query.photoIdList)) : [];
+     console.log('req.query', req.query)
+     const photoIdList:string[] | [] =  req.query.photoIdList ? JSON.parse(req.query.photoIdList as string) : [];
+     console.log('photoIdList', photoIdList)
      if (photoIdList.length == 0) {
           oPhotoManager.getAllPhotos(function (errorCode, shortMessage, httpCode, description, photos) {
                if(errorCode) {

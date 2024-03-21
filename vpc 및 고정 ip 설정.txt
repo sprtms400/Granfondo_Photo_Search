@@ -21,7 +21,26 @@
         --network=gfps-network \
         --region=asia-northeast3
 
-3. App engine 서비스를 서브넷에 연결    //https://cloud.google.com/appengine/docs/legacy/standard/python/connecting-vpc?hl=ko
+ㄴㄴㄴ      gcloud compute networks subnets create gfps-subnet-nat \ 
+        --range=172.8.0.0/28 \
+        --network=gfps-network \
+        --region=asia-northeast3
+
+3. connector 생성   //https://cloud.google.com/appengine/docs/legacy/standard/python/connecting-vpc?hl=ko
+subnet mask 28제한.
+gcloud compute networks vpc-access connectors create CONNECTOR_NAME \
+--network VPC_NETWORK \
+--region REGION \
+--range IP_RANGE
+
+ㄴㄴㄴ  gcloud compute networks vpc-access connectors create gfps-connector \
+        --network gfps-network \
+        --region asia-northeast3 \
+        --range 172.8.0.0/28
+        --max-instances=3 \
+        --min-instances=2
+
+4. App engine 서비스를 서브넷에 연결    //https://cloud.google.com/appengine/docs/legacy/standard/python/connecting-vpc?hl=ko
 ㄴ  gcloud compute networks vpc-access connectors create CONNECTOR_NAME \
     --region REGION \
     --subnet SUBNET \
@@ -36,7 +55,7 @@
 
 ㄴㄴ    
 
-4. Cloud Router 생성
+5. Cloud Router 생성
 ㄴ gcloud compute routers create ROUTER_NAME \
     --network=NETWORK_NAME \
     --region=REGION
@@ -45,14 +64,17 @@
      --network=gfps-network \
      --region=asia-northeast3
 
-4. 고정 IP 예약
+6. 고정 IP 예약
 ㄴ gcloud compute addresses create ORIGIN_IP_NAME \
     --region=REGION
 
 ㄴㄴ  gcloud compute addresses create gfps-ip \
       --region=asia-northeast3
 
-5. Cloud NAT 게이트웨이 생성 후 IP 주소 지정
+ㄴㄴㄴ  gcloud compute addresses create gfps-ip-nat \
+      --region=asia-northeast3
+
+7. Cloud NAT 게이트웨이 생성 후 IP 주소 지정
 ㄴ gcloud compute routers nats create NAT_NAME \
     --router=ROUTER_NAME \
     --region=REGION \
@@ -64,3 +86,23 @@
     --region=asia-northeast3 \
     --nat-custom-subnet-ip-ranges=gfps-subnet \
     --nat-external-ip-pool=gfps-ip
+
+ㄴㄴㄴ      gcloud compute routers nats create gfps-nat-nat     \
+            --router=gfps-router     \
+            --region=asia-northeast3     \
+            --nat-custom-subnet-ip-ranges=gfps-subnet-nat     \
+            --nat-external-ip-pool=gfps-ip-nat
+
+8. app.yaml 에서 외부 트래픽 이용하는 설정 추가
+ㄴ vpc_access_connector:
+  name: projects/PROJECT_ID/locations/REGION/connectors/CONNECTOR_NAME
+  egress_setting: all-traffic
+
+ㄴㄴ vpc_access_connector:
+    name: projects/granfondophotosearch/locations/asia-northeast3/connectors/gfps-connector
+    egress_setting: all-traffic
+
+
+
+vpc peering 
+https://nangman14.tistory.com/41
