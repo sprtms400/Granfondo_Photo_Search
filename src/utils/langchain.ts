@@ -48,6 +48,24 @@ export const vecterize_words = async function (words: string) {
     }
 }
 
+export const llm_route_searchtype = async function (query: string) {
+    try {
+        const assistant_requirment: string = "너는 검색타입을 분류하는 에이전트이다. 번호판에 대한 번호를 이용한 검색인지, 이미지 내의 인물의 인상착의에 대한 검색인지를 분류하여라. 전달받은 검색어를 분석하여 번호판에 대한 검색인지, 인물의 인상착의에 대한 검색인지를 판단하여라. 번호판에 대한 검색이라면 'number_plate', 인물의 인상착의에 대한 검색이라면 'appearance'를 반환하라. 만약 분류에 실패하면 사과하지 말고 빈 문자열을 반환하라." 
+        const prompt = ChatPromptTemplate.fromMessages([
+            ["system", assistant_requirment],
+            ["user", "검색어 : {input}"],
+        ]);
+        const chain = prompt.pipe(chatModel).pipe(outputParser);
+        const response = await chain.invoke({
+            input: query,
+        });
+        const parsed_response = JSON.parse(JSON.stringify(response));
+        return JSON.parse(parsed_response);
+    } catch (error) {
+        console.log('error: ', error)
+        return {}
+    }
+}
 /**
  * 
  * @param query 

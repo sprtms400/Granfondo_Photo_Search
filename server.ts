@@ -2,7 +2,6 @@ import dotenv from 'dotenv'         // Get env variables using dotenv package
 // dotenv.config()
 // const openai_api_key: string | undefined = process.env.OPENAI_API_KEY;
 // const pinecone_api_key: string | undefined = process.env.PINECONE_API_KEY;
-
 import path from 'path'
 import * as fs from 'fs'
 import redis from 'redis'
@@ -40,6 +39,11 @@ async function start_server() {
         .catch((error) => {
             console.error('error:', error);
             throw new Error('pinecone key is empty');
+        });
+
+        await readKey('./keys/pinecone_number.json').then((key) => {
+            console.log('pinecone number key:', key);
+            pineconeDB.init_pinecone_number(key);
         });
 
         // dotenv key management

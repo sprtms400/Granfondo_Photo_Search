@@ -467,6 +467,27 @@ export const uploadDescription = function (req: e.Request, res: e.Response) {
      });
 }
 
+export const uploadNubmerplate = function (req: e.Request, res: e.Response) {
+     const photoId = req.params.photoId;
+     const numberplate = req.body.numberplate;
+     console.log('')
+     if(!photoId) {
+          return oRest.sendError(res, 24, 'photoId is required', 400, 'photoId is required');
+     }
+     if(!numberplate) {
+          return oRest.sendError(res, 24, 'numberplate is required', 400, 'numberplate is required');
+     }
+     oPhotoManager.uploadNubmerplate(photoId, numberplate, function (errorCode, shortMessage, httpCode, description, photo) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photo) {
+               return oRest.sendSuccess(res, photo, httpCode);
+          }
+     });
+}
+
+
 export const uploadDescriptions = function (req: e.Request, res: e.Response) {
      const appearDescriptions = req.body.appearDescriptions;
      if (!appearDescriptions) {
@@ -492,6 +513,22 @@ export const vectorSearch = function (req: e.Request, res: e.Response) {
           return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
      }
      oPhotoManager.vectorSearch(natural_query, top_k, function (errorCode, shortMessage, httpCode, description, photos) {
+          if(errorCode) {
+               return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
+          }
+          if (photos) {
+               return oRest.sendSuccess(res, photos, httpCode);
+          }
+     });
+}
+
+export const vectorNumberSearch = function (req: e.Request, res: e.Response) {
+     const number_query: any = req.query.number_query ? req.query.number_query : '';
+     const top_k: any = req.query.top_k ? req.query.top_k : 10;
+     if(!number_query) {
+          return oRest.sendError(res, 24, 'natural_query is required', 400, 'natural_query is required');
+     }
+     oPhotoManager.vectorNumberSearch(number_query, top_k, function (errorCode, shortMessage, httpCode, description, photos) {
           if(errorCode) {
                return oRest.sendError(res, errorCode, shortMessage, httpCode, description);
           }
