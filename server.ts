@@ -41,11 +41,6 @@ async function start_server() {
             throw new Error('pinecone key is empty');
         });
 
-        await readKey('./keys/pinecone_number.json').then((key) => {
-            console.log('pinecone number key:', key);
-            pineconeDB.init_pinecone_number(key);
-        });
-
         // dotenv key management
         // langchain.init_langchain(openai_api_key)
         // pineconeDB.init_pinecone(pinecone_api_key)
@@ -74,7 +69,7 @@ async function start_server() {
 
         // CORS setting
         const corsOptions = {
-            origin: ['http://localhost:3000', 'http://localhost:8080'],
+            origin: ['http://localhost:3000', 'http://localhost:8080', 'https://app.granphotossearch.com', 'https://api.granphotossearch.com'],
             optionsSuccessStatus: 200
         }
         app.use(cors(corsOptions));

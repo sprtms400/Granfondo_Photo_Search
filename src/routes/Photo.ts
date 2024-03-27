@@ -55,10 +55,8 @@ router.post('/photo/colorText_to_CIELAB', oPhotoCtrl.colorText_to_CIELAB);
 
 router.post('/photo/searchPhoto', oPhotoCtrl.searchPhoto);
 router.post('/photo/:photoId/uploadDescription', oPhotoCtrl.uploadDescription);
-router.post('/photo/:photoId/uploadNubmerplate', oPhotoCtrl.uploadNubmerplate);
 
 router.get('/photo/search/vector', oPhotoCtrl.vectorSearch);
-router.get('/photo/search/vectorNumberSearch', oPhotoCtrl.vectorNumberSearch);
 router.get('/photo/aggregate/color_by_field', oPhotoCtrl.aggregateColorByField);
 router.get('/photo/search/vectorSearch_by_CIELAB', oPhotoCtrl.vectorSearch_by_CIELAB);
 export default router;

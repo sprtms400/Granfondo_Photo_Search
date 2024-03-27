@@ -476,19 +476,6 @@ export const uploadDescription = async function (photoId: string, appearDescript
     }
 }
 
-export const uploadNubmerplate = async function (photoId: string, numberPlate: string,
-        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
-    try {
-        const vectorizedNumberPlate = await langchain.vecterize_words(numberPlate);
-        console.log('vectorizedNumberPlate', vectorizedNumberPlate)
-        pineconeDB.upsert_by_photoId_number(photoId, vectorizedNumberPlate, 'vecterized_numberplate', {});
-        return callback(null, null, 200, null, numberPlate);
-    } catch (error) {
-        console.log('error', error);
-        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
-    }
-}
-
 export const uploadDescriptions = async function (appearDescriptions: any,
         callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
     try {
@@ -529,24 +516,6 @@ export const vectorSearch = async function (query: string, top_k: number,
         console.log('restructured_query', restructured_query)
         const vectorizedQuery = await langchain.vecterize_words(restructured_query);
         const responses = await pineconeDB.query_single_namespace(vectorizedQuery, 'appearance_description', top_k);
-        console.log('vectorizedQuery', vectorizedQuery)
-        console.log('responses', responses)
-        return callback(null, null, 200, null, responses);
-    } catch (error) {
-        console.log('error', error);
-        return callback(24, 'function_fail', 500, 'An error occurred for an unknown reason. Please contact the administrator.', null);
-    }
-}
-
-export const vectorNumberSearch = async function (number_query: string, top_k: number,
-        callback: (errorCode: number|null, shortMessage: string|null, httpCode: number, description: string|null, response: any) => void) {
-    try {
-        // 검색어 파싱하여 룰 기반 검색어 생성 후 백터화 필요
-        // {
-        //
-        // }
-        const vectorizedQuery = await langchain.vecterize_words(number_query);
-        const responses = await pineconeDB.query_single_namespace_number(vectorizedQuery, 'numberplate', top_k);
         console.log('vectorizedQuery', vectorizedQuery)
         console.log('responses', responses)
         return callback(null, null, 200, null, responses);
