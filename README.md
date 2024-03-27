@@ -61,12 +61,14 @@
 4. easyOCR : https://github.com/JaidedAI/EasyOCR <br>🙋 배번표 영역에서 배번표 번호를 추출하기 위해 이용됨
 
 ## 기능 설명
-![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/c6dc48a4-7b52-41c6-95f8-1810a8ffb910)
-본 Repository는 위의 시스템 아키텍처에서 녹색 사각형으로 하이라이팅한 부분에 대한 리포지터리입니다.
-제공하는 기능은 다음과 같습니다.
-1. 사진에 대한 업로드 및 메타데이터 추출
-2. 대회 정보에대한 관리
-3. 이용자 관리
+1. 전체 시스템 데이터 흐름 구조도 (검색 로직은 13부터 참고하세요)
+![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/28254c7d-3681-4e5e-9cc8-35cfc0ec8f9a)
+
+2. ocrDINO 작동 로직 (배번표 검출 및 번호 검출방법)
+![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/bfb19af6-2e4e-4c73-8c4f-609e2cd7954c)
+
+3. appearance-llava 작동 로직 (인상책의 검출 방법)
+![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/9e76b7a4-9ce7-4c2c-84b7-a122d2a54244)
 
 ## 개발된 환경 및 구성
 
