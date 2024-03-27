@@ -46,8 +46,6 @@
 4. Ontoogy 와 LLM을 이용한 자연어로 구성된 검색쿼리에 대하여 구조적으로 분해하는법. (#)
 
 
-
-
 ## 프로젝트의 관련 Repositories 와 용도
 1. 네이버 이미지 크롤러 : https://github.com/sprtms400/Naver_Cafe_Image_Crawler <br>🙋 대회별 이미지를 수집하기 위해 개발됨.
 2. 배번표 분석기 : https://github.com/sprtms400/ocrDINO_NumberExtractor <br>🙋 이미지 내에서 Grounding DINO를 이용하여 배번표 영역을 검출하고 OCR진행을 수행하기위해 개발됨
@@ -61,13 +59,16 @@
 4. easyOCR : https://github.com/JaidedAI/EasyOCR <br>🙋 배번표 영역에서 배번표 번호를 추출하기 위해 이용됨
 
 ## 기능 설명
-1. 전체 시스템 데이터 흐름 구조도 (검색 로직은 13부터 참고하세요)
+1. 시스템 아키텍처
+![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/bd32ea8a-23fe-44b5-8bd6-c344615fe534)
+
+2. 전체 시스템 데이터 흐름 구조도 (검색 로직은 13부터 참고하세요)
 ![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/28254c7d-3681-4e5e-9cc8-35cfc0ec8f9a)
 
-2. ocrDINO 작동 로직 (배번표 검출 및 번호 검출방법)
+3. ocrDINO 작동 로직 (배번표 검출 및 번호 검출방법)
 ![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/bfb19af6-2e4e-4c73-8c4f-609e2cd7954c)
 
-3. appearance-llava 작동 로직 (인상책의 검출 방법)
+4. appearance-llava 작동 로직 (인상책의 검출 방법)
 ![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/9e76b7a4-9ce7-4c2c-84b7-a122d2a54244)
 
 ## 개발된 환경 및 구성
