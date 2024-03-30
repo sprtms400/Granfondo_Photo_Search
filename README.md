@@ -68,7 +68,7 @@
 3. ocrDINO 작동 로직 (배번표 검출 및 번호 검출방법)
 ![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/bfb19af6-2e4e-4c73-8c4f-609e2cd7954c)
 
-4. appearance-llava 작동 로직 (인상책의 검출 방법)
+4. appearance-llava 작동 로직 (인상착의 검출 방법)
 ![image](https://github.com/sprtms400/Granfondo_Photo_Search/assets/26298389/9e76b7a4-9ce7-4c2c-84b7-a122d2a54244)
 
 ## 개발된 환경 및 구성
