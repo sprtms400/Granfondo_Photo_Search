@@ -6,3 +6,6 @@
 
 # Buildied File
 /dist
+node_modules/
+.env
+keys/*.json
