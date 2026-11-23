@@ -1,6 +1,6 @@
-# Granfondo Photo Search
+# 픽마이레이스(PickMyRace)
 
-마라톤·그란폰도 대회 사진에서 내 사진을 찾아주는 검색 서비스의 API 서버다.
+마라톤·그란폰도 참가자가 옷차림이나 자전거 특징으로 자기 사진을 찾는 서비스다. 이 저장소에는 사진 분석 결과를 저장하고 검색 요청을 처리하는 TypeScript·Express API 서버가 들어 있다.
 
 > 2023~2024년 작업이다. `app.granphotossearch.com` 에 초기 서비스를 배포했었다.
 
@@ -28,14 +28,14 @@
 
 ## 3. 향후 과제
 
-배번표 검색은 아직 붙이지 못했다. 번호를 읽어내는 부분은 만들었지만 검색에 연결하지 않았다.
+이 공개 버전에서는 배번표를 찾아 숫자를 읽고 그 결과를 저장한다. 참가자 검색 화면은 인상착의 검색에 연결돼 있다.
 
 색인해둔 대회도 2023 상주그란폰도 하나뿐이다. 대회가 늘어나면 사진 수집부터 라벨링까지 자동으로 도는 구조가 필요하다.
 
 |기능|상태|
 |---|---|
 |인상착의 검색|동작|
-|배번표 검색|미연결|
+|배번표 검색|공개 버전은 배번 인식·저장까지 구현|
 
 ---
 
@@ -89,8 +89,8 @@ LLaVA 라는, 이미지를 보고 답하는 모델을 직접 띄워서 쓴다. �
 
 | 저장소 | 하는 일 |
 |---|---|
-| **Granfondo_Photo_Search** (여기) | API 서버. 검색과 콘텐츠 관리 |
-| [Granfondo_Photo_Search_Front](https://github.com/sprtms400/Granfondo_Photo_Search_Front) | 사용자가 쓰는 웹 화면 |
+| **픽마이레이스 API** (이 저장소) | API 서버. 검색과 콘텐츠 관리 |
+| [픽마이레이스 웹](https://github.com/sprtms400/Granfondo_Photo_Search_Front) | 사용자가 쓰는 웹 화면 |
 | [Naver_Cafe_Image_Crawler](https://github.com/sprtms400/Naver_Cafe_Image_Crawler) | 대회 사진 수집 |
 | [ocrDINO_NumberExtractor](https://github.com/sprtms400/ocrDINO_NumberExtractor) | 배번호 읽기 |
 | [appearance-llava](https://github.com/sprtms400/appearance-llava) | 옷차림 읽기 |
@@ -114,7 +114,7 @@ Ubuntu 20.04, Node 20.11 에서 개발했다.
 
 ## 4. 한계점
 
-- 배번표 검색이 연결돼 있지 않다. 번호를 읽는 부분은 만들었지만 검색에 붙이지 않았다.
+- 공개 버전의 검색 API에는 배번 조회가 연결돼 있지 않다.
 - 색인된 대회가 2023 상주그란폰도 하나뿐이다.
 - 옷차림 읽기는 LLaVA 를 직접 띄워야 해서 GPU 가 필요하다. 사진이 늘어나면 처리 시간이 그대로 늘어난다.
 - 사진 수집이 네이버 카페 앨범 게시판에 맞춰져 있다. 다른 곳에서 가져오려면 크롤러를 새로 만들어야 한다.

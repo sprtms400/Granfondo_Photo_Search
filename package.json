@@ -1,7 +1,7 @@
 {
   "name": "granfondo_photo_search",
   "version": "0.0.1",
-  "description": "The service finding photos as semantic ways",
+  "description": "PickMyRace API for finding race photos by clothing and bike features",
   "main": "server.ts",
   "scripts": {
     "serve": "npx ts-node server.ts",
